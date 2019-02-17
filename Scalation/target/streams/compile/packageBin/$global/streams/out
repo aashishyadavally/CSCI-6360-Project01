@@ -1,1 +1,19 @@
-[0m[[0m[0mdebug[0m] [0m[0mJar uptodate: D:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\target\scala-2.12\hello_2.12-0.1.0-SNAPSHOT.jar[0m
+[0m[[0m[0minfo[0m] [0m[0mPackaging D:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\target\scala-2.12\hello_2.12-0.1.0-SNAPSHOT.jar ...[0m
+[0m[[0m[0mdebug[0m] [0m[0mInput file mappings:[0m
+[0m[[0m[0mdebug[0m] [0m[0m	package_autompg\autompg$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  D:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\target\scala-2.12\classes\package_autompg\autompg$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	example[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  D:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\target\scala-2.12\classes\example[0m
+[0m[[0m[0mdebug[0m] [0m[0m	package_autompg[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  D:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\target\scala-2.12\classes\package_autompg[0m
+[0m[[0m[0mdebug[0m] [0m[0m	example\autompg.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  D:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\target\scala-2.12\classes\example\autompg.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	example\autompg$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  D:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\target\scala-2.12\classes\example\autompg$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	package_autompg\autompg.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  D:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\target\scala-2.12\classes\package_autompg\autompg.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	example\autompg$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  D:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\target\scala-2.12\classes\example\autompg$delayedInit$body.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	package_autompg\autompg$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  D:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\target\scala-2.12\classes\package_autompg\autompg$.class[0m
+[0m[[0m[0minfo[0m] [0m[0mDone packaging.[0m

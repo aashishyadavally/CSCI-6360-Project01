@@ -119,23 +119,25 @@ object autompg extends App {
 	def main(){
 		banner (" Select dataset: \n\t1. Auto MPG \n\t2. Lorem Ipsum \n\t11. Enter: /correct/path/to/data/csv")
 		val choice	 = scala.io.StdIn.readLine()
-		val folder = "..\\Scalation\\data\\"
 /*		Solve bug for choice = 11			*/
-		val filename = if(choice != "11") {folder + choice + ".csv"} else {scala.io.StdIn.readLine()}
+//		val filename = if(choice != "11") {choice + ".csv"} else {scala.io.StdIn.readLine()}
+		val filename = if(choice != "11") {"autompg.csv"} else {scala.io.StdIn.readLine()}
 		val dataset = Relation (filename, "dataset", null, -1)
 		val column_names = dataset.colNames
 		val num_cols = dataset.cols
-		/*
+
+/* Experiments for Mean Imputation		
 		for(i <- 0 to (num_cols - 1)){
-			val val_mean = dataset.toVectorD(column_names(i)).mean
-			println(val_mean)
-			dataset.update(column_names(i), val_mean, "?") 
-		}
-		*/
+			val selected = dataset.sigmaS(column_names(i), (x) => x!="")
+			//val mean_col = selected.mean
+			//val imputed = ImputeMean.impute(dataset.column(column_names(i)))
+			//dataset.update(column_names(i), val_mean, "") 
+		} */
+		/*
 		banner ("Extracting X matrix and Y vector: ")
 		val (x_initial, y) = dataset.toMatriDD(1 to 6, 0)
 		val x = VectorD.one (x_initial.dim1) +^: x_initial
-		quad_regression (x, y)
+		quad_regression (x, y) */
 	}
 
 	main()
