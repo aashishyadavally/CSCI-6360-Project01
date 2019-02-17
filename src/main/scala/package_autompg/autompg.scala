@@ -115,7 +115,7 @@ object autompg extends App {
 		new PlotM(n, plot_mat)
 		banner ("Successfully implemented Quadratic Regression!")		
 	}
-
+	
 	def main(){
 		banner (" Select dataset: \n\t1. Auto MPG \n\t2. Lorem Ipsum \n\t11. Enter: /correct/path/to/data/csv")
 		val choice	 = scala.io.StdIn.readLine()
