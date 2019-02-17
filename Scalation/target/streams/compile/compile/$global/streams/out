@@ -1,4 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mD:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\src\main\scala\package_autompg\autompg.scala:125:38: not found: value folder[0m
-[0m[[0m[31merror[0m] [0m[0m		val filename = if(choice != "11") {folder + "autompg.csv"} else {scala.io.StdIn.readLine()}[0m
-[0m[[0m[31merror[0m] [0m[0m		                                   ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\src\main\scala\package_autompg\autompg.scala:142:26: value */ is not a member of Unit[0m
+[0m[[0m[31merror[0m] [0m[0m		quad_regression (x, y) */[0m
+[0m[[0m[31merror[0m] [0m[0m		                       ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m
