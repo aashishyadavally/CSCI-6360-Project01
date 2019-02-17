@@ -52,4 +52,30 @@ object autompg extends App {
 		new PlotM(n, plot_mat_sim)
 	}
 	
+	
+	def regression_WLS (x: MatrixD, y: VectorD)
+	{
+		banner ("Implementing Regression WLS: ")
+		val rg_WLS = new Regression_WLS (x, y)
+		val fs_cols = Set(0)
+		val fs_cols_adj = Set(0)
+		val RSqNormal_WLS = new VectorD (7)
+		val RSqAdj_WLS = new VectorD (7) 
+		val n = VectorD.range(1, x.dim2 + 1)
+		
+		for (j <- 1 until x.dim2){
+			val (add_var_adj, new_param_adj, new_qof_adj) = rg_WLS.forwardSel(fs_cols, true)
+			fs_cols_adj  += add_var_adj
+			RSqAdj_WLS(j) = new_qof_adj (0)
+			
+			val (add_var, new_param, new_qof) = rg_WLS.forwardSel(fs_cols, false)
+			fs_cols += add_var	
+			RSqNormal_WLS(j) = new_qof(0)
+		}
+		val plot_mat_WLS = new MatrixD (2, 7)
+		plot_mat_WLS.update(0, RSqAdj_WLS)
+		plot_mat_WLS.update(1, RSqNormal_WLS)
+		new PlotM(n, plot_mat_WLS)
+	}
+
 }
