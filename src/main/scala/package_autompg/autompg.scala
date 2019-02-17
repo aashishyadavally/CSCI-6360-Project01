@@ -33,23 +33,23 @@ object autompg extends App {
 		val rg_sim = new Regression (x, y)
 		val fs_cols = Set(0)
 		val fs_cols_adj = Set(0)
-		val RSqNormal_sim = new VectorD (7)
-		val RSqAdj_sim = new VectorD (7) 
+		val RSqNormal = new VectorD (7)
+		val RSqAdj = new VectorD (7) 
 		val n = VectorD.range(1, x.dim2 + 1)
 		
 		for (j <- 1 until x.dim2){
 			val (add_var_adj, new_param_adj, new_qof_adj) = rg_sim.forwardSel(fs_cols, true)
 			fs_cols_adj  += add_var_adj
-			RSqAdj_sim(j) = new_qof_adj (0)
+			RSqAdj(j) = new_qof_adj (0)
 			
 			val (add_var, new_param, new_qof) = rg_sim.forwardSel(fs_cols, false)
 			fs_cols += add_var	
-			RSqNormal_sim(j) = new_qof(0)
+			RSqNormal(j) = new_qof(0)
 		}
-		val plot_mat_sim = new MatrixD (2, 7)
-		plot_mat_sim.update(0, RSqAdj_sim)
-		plot_mat_sim.update(1, RSqNormal_sim)
-		new PlotM(n, plot_mat_sim)
+		val plot_mat = new MatrixD (2, 7)
+		plot_mat.update(0, RSqAdj)
+		plot_mat.update(1, RSqNormal)
+		new PlotM(n, plot_mat)
 	}
 	
 	
@@ -59,23 +59,48 @@ object autompg extends App {
 		val rg_WLS = new Regression_WLS (x, y)
 		val fs_cols = Set(0)
 		val fs_cols_adj = Set(0)
-		val RSqNormal_WLS = new VectorD (7)
-		val RSqAdj_WLS = new VectorD (7) 
+		val RSqNormal = new VectorD (7)
+		val RSqAdj = new VectorD (7) 
 		val n = VectorD.range(1, x.dim2 + 1)
 		
 		for (j <- 1 until x.dim2){
 			val (add_var_adj, new_param_adj, new_qof_adj) = rg_WLS.forwardSel(fs_cols, true)
 			fs_cols_adj  += add_var_adj
-			RSqAdj_WLS(j) = new_qof_adj (0)
+			RSqAdj(j) = new_qof_adj (0)
 			
 			val (add_var, new_param, new_qof) = rg_WLS.forwardSel(fs_cols, false)
 			fs_cols += add_var	
-			RSqNormal_WLS(j) = new_qof(0)
+			RSqNormal(j) = new_qof(0)
 		}
-		val plot_mat_WLS = new MatrixD (2, 7)
-		plot_mat_WLS.update(0, RSqAdj_WLS)
-		plot_mat_WLS.update(1, RSqNormal_WLS)
-		new PlotM(n, plot_mat_WLS)
+		val plot_mat = new MatrixD (2, 7)
+		plot_mat.update(0, RSqAdj)
+		plot_mat.update(1, RSqNormal)
+		new PlotM(n, plot_mat)
+	}
+	
+	def ridge_regression (x: MatrixD, y: VectorD)
+	{
+		banner ("Implementing Ridge Regression: ")
+		val rg_rid = new RidgeRegression (x, y)
+		cal fs_cols = Set(0)
+		val fs_cols_adj = Set(0)
+		val RSqNormal = new VectorD(7)
+		val RSqAdj = new VectorD(7)
+		val n = VectorD.range(1, x.dim2 + 1)
+		
+		for (j <- 1 until x.dim2){
+			val (add_var_adj, new_param_adj, new_qof_adj) = rg_rid.forwardSel(fs_cols, true)
+			fs_cols_adj += add_var_adj
+			RSqAdj(j) = new_qof_adj (0)
+			
+			val (add_var, new_param, new_qof) = rg_rid.forwardSel(fs_cols, false)
+			fs_cols += add_var
+			RSqNormal (j) = new_qof(0)
+		}
+		val plot_mat = new MatrixD(2, 7)
+		plot_mat.update(0, RSqAdj)
+		plot_mat.update(1, RSqNormal)
+		new PlotM(n, plot_mat)
 	}
 
 }
