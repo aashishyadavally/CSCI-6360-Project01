@@ -27,7 +27,7 @@ object autompg extends App {
 	val x = VectorD.one (x_initial.dim1) +^: x_initial
 	
 
-	def regression_sim (x: MatrixD, y: VectorD)
+	def regression_sim (x: MatriD, y: VectorD)
 	{
 		banner ("Implementing Simple Regression: ")
 		val rg_sim = new Regression (x, y)
@@ -53,7 +53,7 @@ object autompg extends App {
 	}
 	
 	
-	def regression_WLS (x: MatrixD, y: VectorD)
+	def regression_WLS (x: MatriD, y: VectorD)
 	{
 		banner ("Implementing Regression WLS: ")
 		val rg_WLS = new Regression_WLS (x, y)
@@ -78,11 +78,11 @@ object autompg extends App {
 		new PlotM(n, plot_mat)
 	}
 	
-	def ridge_regression (x: MatrixD, y: VectorD)
+	def ridge_regression (x: MatriD, y: VectorD)
 	{
 		banner ("Implementing Ridge Regression: ")
 		val rg_rid = new RidgeRegression (x, y)
-		cal fs_cols = Set(0)
+		val fs_cols = Set(0)
 		val fs_cols_adj = Set(0)
 		val RSqNormal = new VectorD(7)
 		val RSqAdj = new VectorD(7)
@@ -102,5 +102,6 @@ object autompg extends App {
 		plot_mat.update(1, RSqNormal)
 		new PlotM(n, plot_mat)
 	}
+	ridge_regression (x, y)
 
 }
