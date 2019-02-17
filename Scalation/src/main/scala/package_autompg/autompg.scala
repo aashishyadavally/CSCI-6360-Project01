@@ -17,9 +17,9 @@ object autompg extends App {
 		val rg_sim = new Regression (x, y)
 		val fs_cols = Set(0)
 		val fs_cols_adj = Set(0)
-		val RSqNormal = new VectorD (7)
-		val RSqAdj = new VectorD (7) 
-		val n = VectorD.range(1, x.dim2 + 1)
+		val RSqNormal = new VectorD (x.dim2)
+		val RSqAdj = new VectorD (x.dim2) 
+		val n = VectorD.range(1, x.dim2)
 		
 		for (j <- 1 until x.dim2){
 			val (add_var_adj, new_param_adj, new_qof_adj) = rg_sim.forwardSel(fs_cols, true)
@@ -30,7 +30,7 @@ object autompg extends App {
 			fs_cols += add_var	
 			RSqNormal(j) = new_qof(0)
 		}
-		val plot_mat = new MatrixD (2, 7)
+		val plot_mat = new MatrixD (2, x.dim2)
 		plot_mat.update(0, RSqAdj)
 		plot_mat.update(1, RSqNormal)
 		new PlotM(n, plot_mat)
@@ -44,9 +44,9 @@ object autompg extends App {
 		val rg_WLS = new Regression_WLS (x, y)
 		val fs_cols = Set(0)
 		val fs_cols_adj = Set(0)
-		val RSqNormal = new VectorD (7)
-		val RSqAdj = new VectorD (7) 
-		val n = VectorD.range(1, x.dim2 + 1)
+		val RSqNormal = new VectorD (x.dim2)
+		val RSqAdj = new VectorD (x.dim2) 
+		val n = VectorD.range(1, x.dim2)
 		
 		for (j <- 1 until x.dim2){
 			val (add_var_adj, new_param_adj, new_qof_adj) = rg_WLS.forwardSel(fs_cols, true)
@@ -57,7 +57,7 @@ object autompg extends App {
 			fs_cols += add_var	
 			RSqNormal(j) = new_qof(0)
 		}
-		val plot_mat = new MatrixD (2, 7)
+		val plot_mat = new MatrixD (2, x.dim2)
 		plot_mat.update(0, RSqAdj)
 		plot_mat.update(1, RSqNormal)
 		new PlotM(n, plot_mat)
@@ -70,9 +70,9 @@ object autompg extends App {
 		val rg_rid = new RidgeRegression (x, y)
 		val fs_cols = Set(0)
 		val fs_cols_adj = Set(0)
-		val RSqNormal = new VectorD(7)
-		val RSqAdj = new VectorD(7)
-		val n = VectorD.range(1, x.dim2 + 1)
+		val RSqNormal = new VectorD(x.dim2)
+		val RSqAdj = new VectorD(x.dim2)
+		val n = VectorD.range(1, x.dim2)
 		
 		for (j <- 1 until x.dim2){
 			val (add_var_adj, new_param_adj, new_qof_adj) = rg_rid.forwardSel(fs_cols, true)
@@ -83,7 +83,7 @@ object autompg extends App {
 			fs_cols += add_var
 			RSqNormal (j) = new_qof(0)
 		}
-		val plot_mat = new MatrixD(2, 7)
+		val plot_mat = new MatrixD(2, x.dim2)
 		plot_mat.update(0, RSqAdj)
 		plot_mat.update(1, RSqNormal)
 		new PlotM(n, plot_mat)
@@ -96,9 +96,9 @@ object autompg extends App {
 		val rg_quad = new QuadRegression (x, y)
 		val fs_cols = Set(0)
 		val fs_cols_adj = Set(0)
-		val RSqNormal = new VectorD(7)
-		val RSqAdj = new VectorD(7)
-		val n = VectorD.range(1, x.dim2 + 1)
+		val RSqNormal = new VectorD(x.dim2)
+		val RSqAdj = new VectorD(x.dim2)
+		val n = VectorD.range(1, x.dim2)
 		
 		for (j <- 1 until x.dim2){
 			val (add_var_adj, new_param_adj, new_qof_adj) = rg_quad.forwardSel(fs_cols, true)
@@ -107,9 +107,9 @@ object autompg extends App {
 			
 			val (add_var, new_param, new_qof) = rg_quad.forwardSel(fs_cols, false)
 			fs_cols += add_var
-			RSqNormal (j) = new_qof(0)
+			RSqNormal (j) = new_qof (0)
 		}
-		val plot_mat = new MatrixD(2, 7)
+		val plot_mat = new MatrixD(2, x.dim2)
 		plot_mat.update(0, RSqAdj)
 		plot_mat.update(1, RSqNormal)
 		new PlotM(n, plot_mat)
@@ -131,14 +131,13 @@ object autompg extends App {
 			val v_selected = selected.toVectorS(column_names(i))
 			val v_seld = v_selected.map((x) => x.toDouble)
 			val mean_col = (v_seld.sum) / selected.count(column_names(i))
-			println(mean_col)
 			dataset.update(column_names(i), mean_col.toString(), "") 
 		} 
 		
 		banner ("Extracting X matrix and Y vector: ")
-		val (x_initial, y) = dataset.toMatriDD(1 to 6, 0)
+		val (x_initial, y) = dataset.toMatriDD(1 until num_cols, 0)
 		val x = VectorD.one (x_initial.dim1) +^: x_initial
-		quad_regression (x, y)
+		ridge_regression (x, y)
 	}
 
 	main()
