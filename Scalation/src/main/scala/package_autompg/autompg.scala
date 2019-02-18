@@ -10,6 +10,19 @@ import scalation.analytics._
 import scalation.plot.PlotM
 
 
+class IllegalChoiceException(s: String) extends Exception(s){}
+
+class Exception1{
+	@throws(classOf[IllegalChoiceException])
+	def validate(choice: Int){
+		if((choice < 0) || (choice > 11)) {
+			throw new IllegalChoiceException("Invalid Choice.")
+		}
+	}
+}	
+			
+
+
 object autompg extends App {
 	def regression_sim (x: MatriD, y: VectorD)
 	{
@@ -119,7 +132,13 @@ object autompg extends App {
 	def main(){
 		banner (" Select dataset: \n\t1. Auto MPG \n\t2. Lorem Ipsum \n\t11. For other datasets, enter: /correct/path/to/data/csv")
 		val choice	 = scala.io.StdIn.readLine()
-/*		Solve bug for choice = 11			*/
+		var e = new Exception1()
+		try {
+			e.validate(choice.toInt)
+		} catch {
+			case ex: Exception => println("Exception Occured : " + ex)
+		}
+						
 		val filename = if(choice != "11") {choice + ".csv"} else {scala.io.StdIn.readLine()}
 		val dataset = Relation (filename, "dataset", null, -1)
 		val column_names = dataset.colNames
