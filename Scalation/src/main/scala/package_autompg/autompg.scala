@@ -151,10 +151,6 @@ object autompg extends App {
 		val RSqAdj = new VectorD (x.dim2) 
 		val RSqCV = new VectorD (x.dim2)
 		val n = VectorD.range(0, x.dim2 - 1)
-			println("*"*50)
-			println(x.dim2)
-			println("*"*50)
-		
 		for (j <- 1 until x.dim2){
 			val (add_var, new_param, new_qof) = rg_WLS.forwardSel(fs_cols, false)
 			fs_cols += add_var	
@@ -289,7 +285,8 @@ object autompg extends App {
 	
 	def main(){
 		println("-"*75)
-		println (" Select dataset: \n\t 1. Auto MPG \n\t 2. Lorem Ipsum \n\t 3. Concrete Compressive Strength Dataset \n\t 4. Concrete Slump Dataset \n\t 5. Forest Fires \n\t 6. \n\t 7. \n\t 8. \n\t 9. \n\ 10. \n\t 11. For other datasets, enter: /correct/path/to/data/csv")
+		println (" Select dataset: \n\t 1. Auto MPG \n\t 2. Beijing PM2.5 Dataset \n\t 3. Concrete Compressive Strength Dataset \n\t 4. Real Estate Valuation Dataset \n\t 5.  \n\t 6. GPS Trajectories")
+		println("\t 7. Appliances Energy Prediction  \n\t 8. Combined Cycle Powerplant \n\t 9. CSM Dataset \n\t 10. Naval Propulsion Dataset \n\t 11. For other datasets, enter: /correct/path/to/data/csv")
 		println("-"*75)
 		
 		val choice	 = scala.io.StdIn.readLine()

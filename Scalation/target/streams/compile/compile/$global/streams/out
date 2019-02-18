@@ -1,6 +1,7 @@
-[0m[[0m[31merror[0m] [0m[0mD:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\src\main\scala\package_autompg\autompg.scala:136:63: type mismatch;[0m
-[0m[[0m[31merror[0m] [0m[0m found   : scalation.linalgebra.VectorD[0m
-[0m[[0m[31merror[0m] [0m[0m required: String[0m
-[0m[[0m[31merror[0m] [0m[0m		new Plot(n, RSqNormal.slice(1), RSqAdj.slice(1), RSqCV.slice(1), lines=true)[0m
-[0m[[0m[31merror[0m] [0m[0m		                                                            ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\src\main\scala\package_autompg\autompg.scala:289:175: unclosed string literal[0m
+[0m[[0m[31merror[0m] [0m[0m		println( \n\t 7. Appliances Energy Prediction  \n\t 8. Combined Cycle Powerplant \n\t 9. CSM Dataset \n\t 10. \n\t 11. For other datasets, enter: /correct/path/to/data/csv")[0m
+[0m[[0m[31merror[0m] [0m[0m		                                                                                                                                                                            ^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\src\main\scala\package_autompg\autompg.scala:289:55: ')' expected but integer literal found.[0m
+[0m[[0m[31merror[0m] [0m[0m		println( \n\t 7. Appliances Energy Prediction  \n\t 8. Combined Cycle Powerplant \n\t 9. CSM Dataset \n\t 10. \n\t 11. For other datasets, enter: /correct/path/to/data/csv")[0m
+[0m[[0m[31merror[0m] [0m[0m		                                                    ^[0m
+[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m
