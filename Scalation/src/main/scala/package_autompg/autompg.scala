@@ -211,7 +211,7 @@ object autompg extends App {
 		val RSqCV = new VectorD(num_terms)
 		val n = VectorD.range(1, num_terms)
 		
-		for (j <- 0 until num_terms){
+		for (j <- 1 until num_terms){
 			val (add_var, new_param, new_qof) = rg_quad.forwardSel(fs_cols, false)
 			fs_cols += add_var
 			RSqNormal (j) = new_qof (0)
@@ -289,7 +289,7 @@ object autompg extends App {
 	
 	def main(){
 		println("-"*75)
-		println (" Select dataset: \n\t 1. Auto MPG \n\t 2. Lorem Ipsum \n\t 11. For other datasets, enter: /correct/path/to/data/csv")
+		println (" Select dataset: \n\t 1. Auto MPG \n\t 2. Lorem Ipsum \n\t 3. Concrete Compressive Strength Dataset \n\t 4. Concrete Slump Dataset \n\t 5. Forest Fires \n\t 6. \n\t 7. \n\t 8. \n\t 9. \n\ 10. \n\t 11. For other datasets, enter: /correct/path/to/data/csv")
 		println("-"*75)
 		
 		val choice	 = scala.io.StdIn.readLine()
