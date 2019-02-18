@@ -1,6 +1,4 @@
-/*Code for AUTO_MPG dataset */
-
-package package_autompg
+package RegressionProblem
 import scalation.columnar_db.Relation
 import scalation.util.banner
 import scala.collection.mutable.Set
