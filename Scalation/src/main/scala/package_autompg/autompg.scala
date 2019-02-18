@@ -144,16 +144,54 @@ object autompg extends App {
 	def lasso_regression(x: MatriD, y: VectorD)
 	{
 		banner ("Implementing Lasso Regression...")
+		val rg_lasso = new LassoRegression (x, y)
+		val fs_cols = Set.empty[Int]
+		val fs_cols_adj = Set.empty[Int]
+		val RSqNormal = new VectorD(x.dim2)
+		val RSqAdj = new VectorD(x.dim2)
+		val n = VectorD.range(0, x.dim2)
 		
+		for (j <- 0 until x.dim2){
+			val (add_var_adj, new_param_adj, new_qof_adj) = rg_lasso.forwardSel(fs_cols, true)
+			fs_cols_adj += add_var_adj
+			RSqAdj(j) = new_qof_adj (0)
+			
+			val (add_var, new_param, new_qof) = rg_lasso.forwardSel(fs_cols, false)
+			fs_cols += add_var
+			RSqNormal (j) = new_qof (0)
+		}
+		val plot_mat = new MatrixD(2, x.dim2)
+		plot_mat.update(0, RSqAdj)
+		plot_mat.update(1, RSqNormal)
+		new PlotM(n, plot_mat)
 		banner ("Successfully implemented Lasso Regression!")
 	}
 	
-	def response_surface (x: MatriD, y: VectorD)
+	/* def response_surface (x: MatriD, y: VectorD)
 	{
 		banner ("Implementing Response Surface... ")
+		val rg_quad = new QuadRegression (x, y)
+		val fs_cols = Set(0)
+		val fs_cols_adj = Set(0)
+		val RSqNormal = new VectorD(x.dim2)
+		val RSqAdj = new VectorD(x.dim2)
+		val n = VectorD.range(1, x.dim2)
 		
-		banner ("Successfully implemented Response Surface!")
-	}
+		for (j <- 1 until x.dim2){
+			val (add_var_adj, new_param_adj, new_qof_adj) = rg_quad.forwardSel(fs_cols, true)
+			fs_cols_adj += add_var_adj
+			RSqAdj(j) = new_qof_adj (0)
+			
+			val (add_var, new_param, new_qof) = rg_quad.forwardSel(fs_cols, false)
+			fs_cols += add_var
+			RSqNormal (j) = new_qof (0)
+		}
+		val plot_mat = new MatrixD(2, x.dim2)
+		plot_mat.update(0, RSqAdj)
+		plot_mat.update(1, RSqNormal)
+		new PlotM(n, plot_mat)
+		banner ("Successfully implemented Response Surface!") 
+	} */
 	
 	def main(){
 		banner (" Select dataset: \n\t1. Auto MPG \n\t2. Lorem Ipsum \n\t11. For other datasets, enter: /correct/path/to/data/csv")
@@ -190,18 +228,19 @@ object autompg extends App {
 			val x = VectorD.one (x_initial.dim1) +^: x_initial
 			regression_WLS(x, y)
 		} else if (model == "3") {
-			val (x_initial, y) = dataset.toMatriDD(1 until num_cols, 0)
-			val x = VectorD.one (x_initial.dim1) +^: x_initial
+			val (x, y) = dataset.toMatriDD(1 until num_cols, 0)
 			quad_regression(x, y)
 		} else if (model == "4") {
 			val (x, y) = dataset.toMatriDD(1 until num_cols, 0)
 			ridge_regression(x, y)
 		} else if (model == "5") {
-			val (x, y) = dataset.toMatriDD(1 until num_cols, 0)
+			val (x_initial, y) = dataset.toMatriDD(1 until num_cols, 0)
+			val x = VectorD.one (x_initial.dim1) +^: x_initial
+			print(x)
 			lasso_regression(x, y)
-		} else if (model == "6") {
+		/* } else if (model == "6") {
 			val (x, y) = dataset.toMatriDD(1 until num_cols, 0)
-			response_surface(x, y)
+			response_surface(x, y) */
 		}
 	}
 
