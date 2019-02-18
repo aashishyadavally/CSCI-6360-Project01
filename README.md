@@ -1,6 +1,6 @@
 # CSCI-6360-Project01 : Regression Problem in Scalation and R
 
-This project covers implementations of Simple Regression, Regression Weighted Least Squares, Ridge Regression, Lasso Regression, Quad Regression, and Response Surface in Scalation and R , over 10 datasets downloaded from the UCI Machine earning Repository. 
+This project covers implementations of Simple Regression, Regression Weighted Least Squares, Ridge Regression, Lasso Regression, Quad Regression, and Response Surface in Scalation and R , over 10 datasets downloaded from the UCI Machine Learning Repository. 
 
 ## Getting Started
 These instructions describe the prerequisites and steps to get the project up and running.
