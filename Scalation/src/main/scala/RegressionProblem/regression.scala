@@ -1,3 +1,10 @@
+//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+/** @author  Aashish Yadavally
+ *  @version 1.0
+ *  @date    Feb 18, 2019
+ *  @see     LICENSE (MIT style license file)
+ */
+
 package RegressionProblem
 import scalation.columnar_db.Relation
 import scalation.util.banner
@@ -6,7 +13,10 @@ import scalation.linalgebra._
 import scalation.analytics._
 import scalation.plot.PlotM
 
-// Defining IllegalChoiceException class
+
+//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+/** Defining IllegalChoiceException class
+*/
 class IllegalChoiceException(s: String) extends Exception(s){}
 
 class Exception1{
@@ -18,7 +28,10 @@ class Exception1{
 	}
 }
 
-// Class for cross-validation, which has different regression members, which return RCV-Squared
+//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+/** Defining a class for cross-validation, which has different regression members, 
+* which return RCV-Squared averaged across all folds for that model.
+*/
 class cross_validation(x: MatriD, y: VectorD) {
 	val m = x.dim1 // Number of data instances
 	val k = 10 // Number of folds
@@ -116,8 +129,17 @@ class cross_validation(x: MatriD, y: VectorD) {
 		return rSq_vector.mean  // Returning the mean of the R-Squared for different folds, i.e, RCV-Squared
 	}
 }	
-			
-object autompg extends App {
+
+
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+/** The 'RegressionTest' object uses the defined cross-validation class, pre-defined 
+* MatrixD and Regression classes to perform multiple regressions and subsequent analysis 
+* on different numerical datasets, in the 'data' folder.  
+*  > "sbt run" in the Scalation folder containing the build file to run the program.
+* User gets two choices, once, to run on the dataset of his/her choice and again, to 
+* choose the model to build the R2-RBar2-RCV2 graph on.
+*/			
+object RegressionTest extends App {
 
 	// Method to implement the Simple Regression Model for R2-RBar2-RCV2 plot
 	def regression_sim (x: MatriD, y: VectorD)
