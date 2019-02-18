@@ -24,6 +24,8 @@ If the user wishes to use this project for their own dataset, they will have to 
 * the first column of the dataset needs to be the 'Y' attribute.
 If the user chooses to add their own dataset to the list, they will have to navigate one step back, to the `/data` directory and move the dataset there. The naming convention followed in the project is, "x.csv" where 'x' is the choice that the user inputs.
 
+To run the R scripts, the user needs to enter `Rscript x.R` where 'x' is the filename. The user can run the scripts in the `/R` sub-direvtory in the repository to generate the  R<sup>2</sup> - R<sub>bar</sub><sup>2</sup> - R<sub>CV</sub><sup>2</sup> plots for the datasets of their choice.
+
 ### Contributors
 See CONTRIBUTORS file for more details.
 
