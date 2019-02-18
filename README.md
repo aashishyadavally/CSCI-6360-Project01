@@ -24,6 +24,10 @@ If the user wishes to use this project for their own dataset, they will have to 
 * the first column of the dataset needs to be the 'Y' attribute.
 If the user chooses to add their own dataset to the list, they will have to navigate one step back, to the `/data` directory and move the dataset there. The naming convention followed in the project is, "x.csv" where 'x' is the choice that the user inputs.
 
+To check the Scala script, the user will have to navigate to `Scalation/src/main/scala/RegressionProblem/regression.scala`
+
+One thing to note is that, while running this script on big datasets, as the Feature Selection reaches the end, Quality of Fit becomes NAN, because of which '-1' is appended into the feature-selected vector and you will face an `ArrayOutOfBounds` error. As a result, I have been unsuccessful in running the script on few of the bigger datasets on the UCI Machine Learning Repository. I don't know if the problem is with the script (which has been written to generalize, as has also been seen while running different datasets), or if there is a bug within the `ForwardSel` class.
+
 To run the R scripts, the user needs to enter `Rscript x.R` where 'x' is the filename. The user can run the scripts in the `/R` sub-direvtory in the repository to generate the  R<sup>2</sup> - R<sub>bar</sub><sup>2</sup> - R<sub>CV</sub><sup>2</sup> plots for the datasets of their choice.
 
 ### Contributors
