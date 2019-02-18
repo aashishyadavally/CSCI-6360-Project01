@@ -103,7 +103,7 @@ class cross_validation(x: MatriD, y: VectorD) {
 			val YTe = y(idx)
 			val XTr = x.selectRowsEx(idx_array)
 			val YTr = y.selectEx(idx_array)
-			val rg = new ResponseSurface(XTr, YTr)
+			val rg = new Regression(XTr, YTr)
 			rg.train().eval(XTe, YTe)
 			rSq_vector (ctr) = rg.fitMap.get("rSq").get.toDouble
 			ctr += 1
@@ -122,16 +122,13 @@ object autompg extends App {
 		val RSqNormal = new VectorD (x.dim2)
 		val RSqAdj = new VectorD (x.dim2) 
 		val RSqCV = new VectorD (x.dim2)
-		val n = VectorD.range(0, x.dim2 - 1)
+		val n = VectorD.range(1, x.dim2 + 1)
 		
 		for (j <- 1 until x.dim2){
-			val (add_var_adj, new_param_adj, new_qof_adj) = rg_sim.forwardSel(fs_cols, true)
-			fs_cols_adj  += add_var_adj
-			RSqAdj(j) = new_qof_adj (0)
-			
 			val (add_var, new_param, new_qof) = rg_sim.forwardSel(fs_cols, false)
 			fs_cols += add_var
 			RSqNormal(j) = new_qof(0)
+			RSqAdj(j) = new_qof(7)
 			val x_cv = x.selectCols(fs_cols.toArray)
 			val cv = new cross_validation(x_cv, y)
 			RSqCV(j) = cv.simple_regression_cv()
@@ -140,7 +137,7 @@ object autompg extends App {
 		plot_mat.update(0, RSqAdj)
 		plot_mat.update(1, RSqNormal)
 		plot_mat.update(2, RSqCV)
-		new PlotM(n, plot_mat, lines=true)
+		new PlotM(n, plot_mat, lines=true).setTitle("Simple Regression : Comparison of R-Squared, RBar-Squared, RCV-Squared")
 		banner ("Successfully implemented Simple Regression!")
 	}
 	
@@ -150,7 +147,6 @@ object autompg extends App {
 		banner ("Implementing Regression WLS... ")
 		val rg_WLS = new Regression_WLS (x, y)
 		val fs_cols = Set(0)
-		val fs_cols_adj = Set(0)
 		val RSqNormal = new VectorD (x.dim2)
 		val RSqAdj = new VectorD (x.dim2) 
 		val RSqCV = new VectorD (x.dim2)
@@ -160,13 +156,10 @@ object autompg extends App {
 			println("*"*50)
 		
 		for (j <- 1 until x.dim2){
-			val (add_var_adj, new_param_adj, new_qof_adj) = rg_WLS.forwardSel(fs_cols, true)
-			fs_cols_adj  += add_var_adj
-			RSqAdj(j) = new_qof_adj (0)
-			
 			val (add_var, new_param, new_qof) = rg_WLS.forwardSel(fs_cols, false)
 			fs_cols += add_var	
 			RSqNormal(j) = new_qof(0)
+			RSqAdj (j) = new_qof(7)
 			val x_cv = x.selectCols(fs_cols.toArray)
 			val cv = new cross_validation(x_cv, y)
 			RSqCV(j) = cv.regression_wls_cv()
@@ -175,7 +168,7 @@ object autompg extends App {
 		plot_mat.update(0, RSqAdj)
 		plot_mat.update(1, RSqNormal)
 		plot_mat.update(2, RSqCV)
-		new PlotM(n, plot_mat, lines=true)
+		new PlotM(n, plot_mat, lines=true).setTitle("Regression_WLS : Comparison of R-Squared, RBar-Squared, RCV-Squared")
 		banner ("Successfully implemented Regression WLS!")
 	}
 	
@@ -184,20 +177,16 @@ object autompg extends App {
 		banner ("Implementing Ridge Regression... ")
 		val rg_rid = new RidgeRegression (x, y)
 		val fs_cols = Set.empty[Int]
-		val fs_cols_adj = Set.empty[Int]
 		val RSqNormal = new VectorD(x.dim2)
 		val RSqAdj = new VectorD(x.dim2)
 		val RSqCV = new VectorD(x.dim2)
-		val n = VectorD.range(0, x.dim2)
+		val n = VectorD.range(1, x.dim2 + 1)
 		
-		for (j <- 0 until x.dim2){
-			val (add_var_adj, new_param_adj, new_qof_adj) = rg_rid.forwardSel(fs_cols, true)
-			fs_cols_adj += add_var_adj
-			RSqAdj(j) = new_qof_adj (0)
-			
+		for (j <- 1 until x.dim2){
 			val (add_var, new_param, new_qof) = rg_rid.forwardSel(fs_cols, false)
 			fs_cols += add_var
 			RSqNormal (j) = new_qof (0)
+			RSqAdj (j) = new_qof(7)
 			val x_cv = x.selectCols(fs_cols.toArray)
 			val cv = new cross_validation(x_cv, y)
 			RSqCV(j) = cv.ridge_regression_cv()
@@ -206,30 +195,27 @@ object autompg extends App {
 		plot_mat.update(0, RSqAdj)
 		plot_mat.update(1, RSqNormal)
 		plot_mat.update(2, RSqCV)
-		new PlotM(n, plot_mat, lines=true)
+		new PlotM(n, plot_mat, lines=true).setTitle("Ridge Regression : Comparison of R-Squared, RBar-Squared, RCV-Squared")
 		banner ("Successfully implemented Ridge Regression!")
 	}
 	
-	def quad_regression (x: MatriD, y: VectorD)
+	def quad_regression (x_initial: MatriD, y: VectorD)
 	{
 		banner ("Implementing Quadratic Regression... ")
-		val rg_quad = new QuadRegression (x, y)
-		val fs_cols = Set(0)
-		val fs_cols_adj = Set(0)
-		val num_terms = QuadRegression.numTerms(x.dim2)
+		val rg_quad = new QuadRegression (x_initial, y)
+		val x = rg_quad.getX
+		val fs_cols = Set.empty[Int]
+		val num_terms = x.dim2
 		val RSqNormal = new VectorD(num_terms)
 		val RSqAdj = new VectorD(num_terms)
 		val RSqCV = new VectorD(num_terms)
-		val n = VectorD.range(0, num_terms)
+		val n = VectorD.range(1, num_terms)
 		
-		for (j <- 0 until (2*x.dim2 + 1)){
-			val (add_var_adj, new_param_adj, new_qof_adj) = rg_quad.forwardSel(fs_cols, true)
-			fs_cols_adj += add_var_adj
-			RSqAdj(j) = new_qof_adj (0)
-			
+		for (j <- 0 until num_terms){
 			val (add_var, new_param, new_qof) = rg_quad.forwardSel(fs_cols, false)
 			fs_cols += add_var
 			RSqNormal (j) = new_qof (0)
+			RSqAdj (j) = new_qof(7)
 			val x_cv = x.selectCols(fs_cols.toArray)
 			val cv = new cross_validation(x_cv, y)
 			RSqCV(j) = cv.quad_regression_cv()
@@ -238,7 +224,7 @@ object autompg extends App {
 		plot_mat.update(0, RSqAdj)
 		plot_mat.update(1, RSqNormal)
 		plot_mat.update(2, RSqCV)
-		new PlotM(n, plot_mat, lines=true)
+		new PlotM(n, plot_mat, lines=true).setTitle("Quad Regression : Comparison of R-Squared, RBar-Squared, RCV-Squared")
 
 		banner ("Successfully implemented Quadratic Regression!")		
 	}
@@ -247,55 +233,49 @@ object autompg extends App {
 	{
 		banner ("Implementing Lasso Regression...")
 		val rg_lasso = new LassoRegression (x, y)
+		//val fs_cols = Set.empty[Int]
 		val fs_cols = Set(0)
-		val fs_cols_adj = Set(0)
 		val RSqNormal = new VectorD(x.dim2)
 		val RSqAdj = new VectorD(x.dim2)
 		val RSqCV = new VectorD(x.dim2)
-		val n = VectorD.range(0, x.dim2 - 1)
+		val n = VectorD.range(1, x.dim2 + 1)
 		
-		for (j <- 0 until x.dim2){
-			val (add_var_adj, new_param_adj, new_qof_adj) = rg_lasso.forwardSel(fs_cols, true)
-			fs_cols_adj += add_var_adj
-			RSqAdj(j) = new_qof_adj (0)
-			
+		for (j <- 1 until x.dim2){
 			val (add_var, new_param, new_qof) = rg_lasso.forwardSel(fs_cols, false)
 			fs_cols += add_var
 			RSqNormal (j) = new_qof (0)
+			RSqAdj (j) = new_qof(7)
 			val x_cv = x.selectCols(fs_cols.toArray)
 			val cv = new cross_validation(x_cv, y)
 			RSqCV(j) = cv.lasso_regression_cv()
-
 		}
 		val plot_mat = new MatrixD(3, x.dim2)
 		plot_mat.update(0, RSqAdj)
 		plot_mat.update(1, RSqNormal)
 		plot_mat.update(2, RSqCV)
-		new PlotM(n, plot_mat, lines=true)
+		new PlotM(n, plot_mat, lines=true).setTitle("Lasso Regression : Comparison of R-Squared, RBar-Squared, RCV-Squared")
 		banner ("Successfully implemented Lasso Regression!")
 	}
 	
-	def response_surface (x: MatriD, y: VectorD)
+	def response_surface (x_initial: MatriD, y: VectorD)
 	{
 		banner ("Implementing Response Surface... ")
-		val rg_rs = new ResponseSurface (x, y)
-		val fs_cols = Set(0)
-		val fs_cols_adj = Set(0)
-		val num_terms = ResponseSurface.numTerms(x.dim2)
+		val rg_rs = new ResponseSurface (x_initial, y)
+		val x = rg_rs.getX
+		val fs_cols = Set.empty[Int]
+		val num_terms = x.dim2
 		val RSqNormal = new VectorD(num_terms)
 		val RSqAdj = new VectorD(num_terms)
 		val RSqCV = new VectorD(num_terms)
 		val n = VectorD.range(0, num_terms)
 		
-		for (j <- 0 until num_terms){
-			val (add_var_adj, new_param_adj, new_qof_adj) = rg_rs.forwardSel(fs_cols, true)
-			fs_cols_adj += add_var_adj
-			RSqAdj(j) = new_qof_adj (0)
-			
+		for (j <- 1 until num_terms){
 			val (add_var, new_param, new_qof) = rg_rs.forwardSel(fs_cols, false)
 			fs_cols += add_var
 			RSqNormal (j) = new_qof (0)
+			RSqAdj (j) = new_qof(7)
 			val x_cv = x.selectCols(fs_cols.toArray)
+			println(x_cv.dim1, x_cv.dim2)
 			val cv = new cross_validation(x_cv, y)
 			RSqCV(j) = cv.response_surface_cv()	
 		}
@@ -303,7 +283,7 @@ object autompg extends App {
 		plot_mat.update(0, RSqAdj)
 		plot_mat.update(1, RSqNormal)
 		plot_mat.update(2, RSqCV)
-		new PlotM(n, plot_mat, lines=true)
+		new PlotM(n, plot_mat, lines=true).setTitle("Response Surface : Comparison of R-Squared, RBar-Squared, RCV-Squared")
 		banner ("Successfully implemented Response Surface!") 
 	}
 	

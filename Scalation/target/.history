@@ -433,3 +433,7 @@ compile
 run
 sbt run
 run
+compile
+run
+y
+run
