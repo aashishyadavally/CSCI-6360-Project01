@@ -1,16 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mD:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\src\main\scala\package_autompg\autompg.scala:127:3: not found: value num_terms[0m
-[0m[[0m[31merror[0m] [0m[0m		num_terms = QuadRegression.numTerms(x.dim2)[0m
-[0m[[0m[31merror[0m] [0m[0m		^[0m
-[0m[[0m[31merror[0m] [0m[0mD:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\src\main\scala\package_autompg\autompg.scala:128:31: not found: value num_terms[0m
-[0m[[0m[31merror[0m] [0m[0m		val RSqNormal = new VectorD(num_terms)[0m
-[0m[[0m[31merror[0m] [0m[0m		                            ^[0m
-[0m[[0m[31merror[0m] [0m[0mD:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\src\main\scala\package_autompg\autompg.scala:129:28: not found: value num_terms[0m
-[0m[[0m[31merror[0m] [0m[0m		val RSqAdj = new VectorD(num_terms)[0m
-[0m[[0m[31merror[0m] [0m[0m		                         ^[0m
-[0m[[0m[31merror[0m] [0m[0mD:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\src\main\scala\package_autompg\autompg.scala:130:28: not found: value num_terms[0m
-[0m[[0m[31merror[0m] [0m[0m		val n = VectorD.range(0, num_terms)[0m
-[0m[[0m[31merror[0m] [0m[0m		                         ^[0m
-[0m[[0m[31merror[0m] [0m[0mD:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\src\main\scala\package_autompg\autompg.scala:141:33: not found: value num_terms[0m
-[0m[[0m[31merror[0m] [0m[0m		val plot_mat = new MatrixD(2, num_terms)[0m
-[0m[[0m[31merror[0m] [0m[0m		                              ^[0m
-[0m[[0m[31merror[0m] [0m[0m5 errors found[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\src\main\scala\package_autompg\autompg.scala:62:4: not found: value RSqCV[0m
+[0m[[0m[31merror[0m] [0m[0m			RSqCV(j) = RSq_cv.mean[0m
+[0m[[0m[31merror[0m] [0m[0m			^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m

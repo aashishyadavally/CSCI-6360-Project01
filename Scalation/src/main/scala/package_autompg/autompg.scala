@@ -21,21 +21,6 @@ class Exception1{
 }	
 			
 object autompg extends App {
-	/* def cross_validation(x: MatriD, y: VectorD)
-	{
-		val k = 10
-		val m = x.dim1
-		val indices = VectorI(0 until m).split(k)
-		
-		for (idx <- indices) {
-			val idx_array = idx.toArray
-			val XTe = x(idx)
-			val YTe = y(idx)
-			val XTr = x.selectRowsEx(idx_array)
-			val YTr = y.selectEx(idx_array)
-		}
-	} */
-
 	def regression_sim (x: MatriD, y: VectorD)
 	{
 		banner ("Implementing Simple Regression... ")
@@ -44,6 +29,7 @@ object autompg extends App {
 		val fs_cols_adj = Set(0)
 		val RSqNormal = new VectorD (x.dim2)
 		val RSqAdj = new VectorD (x.dim2) 
+		val RSqCV = new VectorD(x.dim2)
 		val n = VectorD.range(0, x.dim2 - 1)
 		
 		for (j <- 1 until x.dim2){
@@ -52,13 +38,19 @@ object autompg extends App {
 			RSqAdj(j) = new_qof_adj (0)
 			
 			val (add_var, new_param, new_qof) = rg_sim.forwardSel(fs_cols, false)
-			fs_cols += add_var	
+			fs_cols += add_var
 			RSqNormal(j) = new_qof(0)
+			val x_cv = x.selectCols(fs_cols.toArray)
+			val rg_cv = new Regression(x_cv, y)
+			val crossval_array = rg_cv.crossVal()
+			val RSq_cv = crossval_array(rg_cv.index_rSq)
+			RSqCV(j) = RSq_cv.mean
 		}
-		val plot_mat = new MatrixD (2, x.dim2)
+		val plot_mat = new MatrixD (3, x.dim2)
 		plot_mat.update(0, RSqAdj)
 		plot_mat.update(1, RSqNormal)
-		new PlotM(n, plot_mat)
+		plot_mat.update(2, RSqCV)
+		new PlotM(n, plot_mat, lines=true)
 		banner ("Successfully implemented Simple Regression!")
 	}
 	
