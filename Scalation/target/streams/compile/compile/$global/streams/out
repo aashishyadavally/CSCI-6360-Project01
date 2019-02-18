@@ -1,4 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0mD:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\src\main\scala\package_autompg\autompg.scala:62:4: not found: value RSqCV[0m
-[0m[[0m[31merror[0m] [0m[0m			RSqCV(j) = RSq_cv.mean[0m
-[0m[[0m[31merror[0m] [0m[0m			^[0m
+[0m[[0m[31merror[0m] [0m[0mD:\Spring2019\DataScienceII\Projects\CSCI-6360-Project01\Scalation\src\main\scala\package_autompg\autompg.scala:162:15: not found: value cross_validation[0m
+[0m[[0m[31merror[0m] [0m[0m			RSqCV(j) = cross_validation(x_cv, y).simple_regression()[0m
+[0m[[0m[31merror[0m] [0m[0m			           ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m

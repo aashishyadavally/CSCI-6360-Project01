@@ -427,3 +427,9 @@ compile
 run
 compile
 exit
+compile
+run
+compile
+run
+sbt run
+run

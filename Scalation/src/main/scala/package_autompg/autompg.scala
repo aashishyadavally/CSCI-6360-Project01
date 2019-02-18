@@ -18,6 +18,98 @@ class Exception1{
 			throw new IllegalChoiceException("Invalid Choice.")
 		}
 	}
+}
+
+class cross_validation(x: MatriD, y: VectorD) {
+	val m = x.dim1
+	val k = 10
+	val indices = VectorI(0 until m).split(k)
+	val rSq_vector = new VectorD (10)
+	var ctr = 0
+	def simple_regression_cv(): Double = {
+		for (idx <- indices) {
+			val idx_array = idx.toArray
+			val XTe = x(idx)
+			val YTe = y(idx)
+			val XTr = x.selectRowsEx(idx_array)
+			val YTr = y.selectEx(idx_array)
+			val rg = new Regression(XTr, YTr)
+			rg.train().eval(XTe, YTe)
+			rSq_vector (ctr) = rg.fitMap.get("rSq").get.toDouble
+			ctr += 1
+		}
+		return rSq_vector.mean
+	}
+	def regression_wls_cv(): Double = {
+		for (idx <- indices) {
+			val idx_array = idx.toArray
+			val XTe = x(idx)
+			val YTe = y(idx)
+			val XTr = x.selectRowsEx(idx_array)
+			val YTr = y.selectEx(idx_array)
+			val rg = new Regression_WLS(XTr, YTr)
+			rg.train().eval(XTe, YTe)
+			rSq_vector (ctr) = rg.fitMap.get("rSq").get.toDouble
+			ctr += 1
+		}
+		return rSq_vector.mean
+	}
+	def ridge_regression_cv(): Double = {
+		for (idx <- indices) {
+			val idx_array = idx.toArray
+			val XTe = x(idx)
+			val YTe = y(idx)
+			val XTr = x.selectRowsEx(idx_array)
+			val YTr = y.selectEx(idx_array)
+			val rg = new RidgeRegression(XTr, YTr)
+			rg.train().eval(XTe, YTe)
+			rSq_vector (ctr) = rg.fitMap.get("rSq").get.toDouble
+			ctr += 1
+		}
+		return rSq_vector.mean
+	}
+	def quad_regression_cv(): Double = {
+		for (idx <- indices) {
+			val idx_array = idx.toArray
+			val XTe = x(idx)
+			val YTe = y(idx)
+			val XTr = x.selectRowsEx(idx_array)
+			val YTr = y.selectEx(idx_array)
+			val rg = new QuadRegression(XTr, YTr)
+			rg.train().eval(XTe, YTe)
+			rSq_vector (ctr) = rg.fitMap.get("rSq").get.toDouble
+			ctr += 1
+		}
+		return rSq_vector.mean
+	}
+	def lasso_regression_cv(): Double = {
+		for (idx <- indices) {
+			val idx_array = idx.toArray
+			val XTe = x(idx)
+			val YTe = y(idx)
+			val XTr = x.selectRowsEx(idx_array)
+			val YTr = y.selectEx(idx_array)
+			val rg = new LassoRegression(XTr, YTr)
+			rg.train().eval(XTe, YTe)
+			rSq_vector (ctr) = rg.fitMap.get("rSq").get.toDouble
+			ctr += 1
+		}
+		return rSq_vector.mean
+	}
+	def response_surface_cv(): Double = {
+		for (idx <- indices) {
+			val idx_array = idx.toArray
+			val XTe = x(idx)
+			val YTe = y(idx)
+			val XTr = x.selectRowsEx(idx_array)
+			val YTr = y.selectEx(idx_array)
+			val rg = new ResponseSurface(XTr, YTr)
+			rg.train().eval(XTe, YTe)
+			rSq_vector (ctr) = rg.fitMap.get("rSq").get.toDouble
+			ctr += 1
+		}
+		return rSq_vector.mean
+	}
 }	
 			
 object autompg extends App {
@@ -29,7 +121,7 @@ object autompg extends App {
 		val fs_cols_adj = Set(0)
 		val RSqNormal = new VectorD (x.dim2)
 		val RSqAdj = new VectorD (x.dim2) 
-		val RSqCV = new VectorD(x.dim2)
+		val RSqCV = new VectorD (x.dim2)
 		val n = VectorD.range(0, x.dim2 - 1)
 		
 		for (j <- 1 until x.dim2){
@@ -41,10 +133,8 @@ object autompg extends App {
 			fs_cols += add_var
 			RSqNormal(j) = new_qof(0)
 			val x_cv = x.selectCols(fs_cols.toArray)
-			val rg_cv = new Regression(x_cv, y)
-			val crossval_array = rg_cv.crossVal()
-			val RSq_cv = crossval_array(rg_cv.index_rSq)
-			RSqCV(j) = RSq_cv.mean
+			val cv = new cross_validation(x_cv, y)
+			RSqCV(j) = cv.simple_regression_cv()
 		}
 		val plot_mat = new MatrixD (3, x.dim2)
 		plot_mat.update(0, RSqAdj)
@@ -63,7 +153,11 @@ object autompg extends App {
 		val fs_cols_adj = Set(0)
 		val RSqNormal = new VectorD (x.dim2)
 		val RSqAdj = new VectorD (x.dim2) 
+		val RSqCV = new VectorD (x.dim2)
 		val n = VectorD.range(0, x.dim2 - 1)
+			println("*"*50)
+			println(x.dim2)
+			println("*"*50)
 		
 		for (j <- 1 until x.dim2){
 			val (add_var_adj, new_param_adj, new_qof_adj) = rg_WLS.forwardSel(fs_cols, true)
@@ -73,11 +167,15 @@ object autompg extends App {
 			val (add_var, new_param, new_qof) = rg_WLS.forwardSel(fs_cols, false)
 			fs_cols += add_var	
 			RSqNormal(j) = new_qof(0)
+			val x_cv = x.selectCols(fs_cols.toArray)
+			val cv = new cross_validation(x_cv, y)
+			RSqCV(j) = cv.regression_wls_cv()
 		}
-		val plot_mat = new MatrixD (2, x.dim2)
+		val plot_mat = new MatrixD (3, x.dim2)
 		plot_mat.update(0, RSqAdj)
 		plot_mat.update(1, RSqNormal)
-		new PlotM(n, plot_mat)
+		plot_mat.update(2, RSqCV)
+		new PlotM(n, plot_mat, lines=true)
 		banner ("Successfully implemented Regression WLS!")
 	}
 	
@@ -89,24 +187,26 @@ object autompg extends App {
 		val fs_cols_adj = Set.empty[Int]
 		val RSqNormal = new VectorD(x.dim2)
 		val RSqAdj = new VectorD(x.dim2)
+		val RSqCV = new VectorD(x.dim2)
 		val n = VectorD.range(0, x.dim2)
 		
 		for (j <- 0 until x.dim2){
 			val (add_var_adj, new_param_adj, new_qof_adj) = rg_rid.forwardSel(fs_cols, true)
-			println(fs_cols_adj)
 			fs_cols_adj += add_var_adj
-			println(fs_cols_adj)
 			RSqAdj(j) = new_qof_adj (0)
 			
 			val (add_var, new_param, new_qof) = rg_rid.forwardSel(fs_cols, false)
-			println("Hello False")
 			fs_cols += add_var
 			RSqNormal (j) = new_qof (0)
+			val x_cv = x.selectCols(fs_cols.toArray)
+			val cv = new cross_validation(x_cv, y)
+			RSqCV(j) = cv.ridge_regression_cv()
 		}
-		val plot_mat = new MatrixD(2, x.dim2)
+		val plot_mat = new MatrixD(3, x.dim2)
 		plot_mat.update(0, RSqAdj)
 		plot_mat.update(1, RSqNormal)
-		new PlotM(n, plot_mat)
+		plot_mat.update(2, RSqCV)
+		new PlotM(n, plot_mat, lines=true)
 		banner ("Successfully implemented Ridge Regression!")
 	}
 	
@@ -119,6 +219,7 @@ object autompg extends App {
 		val num_terms = QuadRegression.numTerms(x.dim2)
 		val RSqNormal = new VectorD(num_terms)
 		val RSqAdj = new VectorD(num_terms)
+		val RSqCV = new VectorD(num_terms)
 		val n = VectorD.range(0, num_terms)
 		
 		for (j <- 0 until (2*x.dim2 + 1)){
@@ -129,11 +230,15 @@ object autompg extends App {
 			val (add_var, new_param, new_qof) = rg_quad.forwardSel(fs_cols, false)
 			fs_cols += add_var
 			RSqNormal (j) = new_qof (0)
+			val x_cv = x.selectCols(fs_cols.toArray)
+			val cv = new cross_validation(x_cv, y)
+			RSqCV(j) = cv.quad_regression_cv()
 		}
-		val plot_mat = new MatrixD(2, num_terms)
+		val plot_mat = new MatrixD(3, num_terms)
 		plot_mat.update(0, RSqAdj)
 		plot_mat.update(1, RSqNormal)
-		new PlotM(n, plot_mat)
+		plot_mat.update(2, RSqCV)
+		new PlotM(n, plot_mat, lines=true)
 
 		banner ("Successfully implemented Quadratic Regression!")		
 	}
@@ -146,6 +251,7 @@ object autompg extends App {
 		val fs_cols_adj = Set(0)
 		val RSqNormal = new VectorD(x.dim2)
 		val RSqAdj = new VectorD(x.dim2)
+		val RSqCV = new VectorD(x.dim2)
 		val n = VectorD.range(0, x.dim2 - 1)
 		
 		for (j <- 0 until x.dim2){
@@ -156,11 +262,16 @@ object autompg extends App {
 			val (add_var, new_param, new_qof) = rg_lasso.forwardSel(fs_cols, false)
 			fs_cols += add_var
 			RSqNormal (j) = new_qof (0)
+			val x_cv = x.selectCols(fs_cols.toArray)
+			val cv = new cross_validation(x_cv, y)
+			RSqCV(j) = cv.lasso_regression_cv()
+
 		}
-		val plot_mat = new MatrixD(2, x.dim2)
+		val plot_mat = new MatrixD(3, x.dim2)
 		plot_mat.update(0, RSqAdj)
 		plot_mat.update(1, RSqNormal)
-		new PlotM(n, plot_mat)
+		plot_mat.update(2, RSqCV)
+		new PlotM(n, plot_mat, lines=true)
 		banner ("Successfully implemented Lasso Regression!")
 	}
 	
@@ -173,6 +284,7 @@ object autompg extends App {
 		val num_terms = ResponseSurface.numTerms(x.dim2)
 		val RSqNormal = new VectorD(num_terms)
 		val RSqAdj = new VectorD(num_terms)
+		val RSqCV = new VectorD(num_terms)
 		val n = VectorD.range(0, num_terms)
 		
 		for (j <- 0 until num_terms){
@@ -183,11 +295,15 @@ object autompg extends App {
 			val (add_var, new_param, new_qof) = rg_rs.forwardSel(fs_cols, false)
 			fs_cols += add_var
 			RSqNormal (j) = new_qof (0)
+			val x_cv = x.selectCols(fs_cols.toArray)
+			val cv = new cross_validation(x_cv, y)
+			RSqCV(j) = cv.response_surface_cv()	
 		}
-		val plot_mat = new MatrixD(2, num_terms)
+		val plot_mat = new MatrixD(3, num_terms)
 		plot_mat.update(0, RSqAdj)
 		plot_mat.update(1, RSqNormal)
-		new PlotM(n, plot_mat)
+		plot_mat.update(2, RSqCV)
+		new PlotM(n, plot_mat, lines=true)
 		banner ("Successfully implemented Response Surface!") 
 	}
 	
