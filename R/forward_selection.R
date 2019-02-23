@@ -25,5 +25,5 @@ for(i in 1:length(column.names)) {
 	}
 	element = which.max(func.values)	
 	fs.columns <- append(fs.columns, element)
-	column.names <- column.names[column.names != element] # Replace 'element' with the key in check.list which has maximum value
+	column.names <- column.names[column.names != element] 
 }
