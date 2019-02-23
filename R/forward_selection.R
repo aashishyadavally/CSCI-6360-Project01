@@ -1,4 +1,5 @@
 library()
+library(ggplot2)
 #ibrary(DAAG) # For cross validation
 
 
@@ -18,8 +19,8 @@ main <- function() {
 	dimensions <- dim(file) 
 	column.names <- colnames(file) 
 	y.column.name <- column.names[1]
-	x.column.names <- column.names[2:length(column.names)] 
-	
+	x.column.names <- column.names[2:length(column.names)]
+
 	# Mean Imputation
 	#for(col in colnames(file)) {
 	#	file$col[is.na(file$col)] <- mean(file$col, na.rm = TRUE)
@@ -48,10 +49,11 @@ main <- function() {
 		rSq <- append(rSq, model.rsq.values[min.index]) # Adding rSq value for column with maximum criterion
 
 	}
-	print('R-Squared for different values of n is: ')
-	print(rSq)
-	print('Adjusted R-Squared for different values of n is: ')
-	print(adj.rSq)
+	#Plotting rSq and rSqCV
+	plot(rSq, type = 'l', col = 'red', main = "Linear Regression", ylab = "Percentage", ylim = c(0,100))
+	lines(adj.rSq,  col = 'green')
+	#lines(rSqCV,  col = 'blue' )
+	legend(1,95, legend = c("R Squared","Adj R Squared"), col = c("red","green"), lty = 1:2, cex = 0.8)
 }
 
 main()
