@@ -28,12 +28,12 @@ get_criterion <- function(data.frame) {
 	                       sep = "")), data = data.frame, method = "lm")
 	
 	r.squared<-model$results$Rsquared
-	print(model$results)
+	#print(model$results)
 	#translate below using train method
-	lm.summary <- summary(linear.model)
-	rss <- lm.summary[[7]][2] # 7th parameter in Summary is Residual Sum Squares (RSS)
-	r.squared <- lm.summary[[8]] # 8th parameter in Summary is rSq
-	adj.r.squared <- lm.summary[[9]]
+	model.summary <- summary(model)
+	rss <- model.summary[[7]][2] # 7th parameter in Summary is Residual Sum Squares (RSS)
+	r.squared <- model.summary[[8]] # 8th parameter in Summary is rSq
+	adj.r.squared <- model.summary[[9]]
 	rsq.vector <- c(rss, 100*r.squared, 100*adj.r.squared)
 	return(rsq.vector)
 }
