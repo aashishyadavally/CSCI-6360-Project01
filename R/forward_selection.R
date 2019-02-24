@@ -1,6 +1,6 @@
 library()
 library(ggplot2)
-#ibrary(DAAG) # For cross validation
+library(caret)
 
 
 # Returns rSq value for a linear regression model 
@@ -30,6 +30,7 @@ main <- function() {
 	fs.columns <- c(y.column.name) # Forward selection column vector
 	rSq <- vector()
 	adj.rSq <- vector()
+	rSqCv <- vector()
 	for(i in 1:length(x.column.names)) {
 		model.rss.values <- vector() # Vector to track RSS values
 		model.rsq.values <- vector() # Vector to track rSq values
@@ -43,38 +44,20 @@ main <- function() {
 			model.adj.rsq.values <- append(model.adj.rsq.values, model.values[3])
 		}
 		min.index <- which.min(model.rss.values) # Column name with minimum RSS value
-		fs.columns <- append(fs.columns, x.column.names[min.index])
+		fs.columns <- append(fs.columns, x.column.names[min.index]) # Forward selection column vector
+		cv.data.frame <- file[,fs.columns]
+		train.control <-trainControl(method = "cv", number = 10)
+		cross.validation <- train(mpg ~ ., data=cv.data.frame, na.action=na.omit, method="lm", trControl= train.control)
 		x.column.names <- x.column.names[x.column.names != x.column.names[min.index]] # Removing 'min.index' from column names vector
-		adj.rSq <- append(adj.rSq, model.adj.rsq.values[min.index])
+		adj.rSq <- append(adj.rSq, model.adj.rsq.values[min.index]) # Adding adjusted rSq value for column with maximum critrion
 		rSq <- append(rSq, model.rsq.values[min.index]) # Adding rSq value for column with maximum criterion
-
+		rSqCv <- append(rSqCv, 100*cross.validation$results$Rsquared) # Adding rSqCV value for forward selection vector
 	}
 	#Plotting rSq and rSqCV
 	plot(rSq, type = 'l', col = 'red', main = "Linear Regression", ylab = "Percentage", ylim = c(0,100))
 	lines(adj.rSq,  col = 'green')
-	#lines(rSqCV,  col = 'blue' )
-	legend(1,95, legend = c("R Squared","Adj R Squared"), col = c("red","green"), lty = 1:2, cex = 0.8)
+	lines(rSqCv,  col = 'blue' )
+	legend(1,95, legend = c("R-Squared","Adjusted R-Squared", "R=Squared CV"), col = c("red","green", "blue"), lty = 1:2, cex = 0.8)
 }
 
 main()
-
-#cross validation function
-
-k_fold_rsq <- function(lmfit, ngroup=10) {
-  # assumes library(bootstrap)
-  # adapted from http://www.statmethods.net/stats/regression.html
-  mydata <- lmfit$model
-  outcome <- names(lmfit$model)[1]
-  predictors <- names(lmfit$model)[-1]
-  
-  theta.fit <- function(x,y){lsfit(x,y)}
-  theta.predict <- function(fit,x){cbind(1,x)%*%fit$coef} 
-  X <- as.matrix(mydata[predictors])
-  y <- as.matrix(mydata[outcome]) 
-  
-  results <- crossval(X,y,theta.fit,theta.predict,ngroup=ngroup)
-  raw_rsq <- cor(y, lmfit$fitted.values)**2 # raw R2 
-  cv_rsq <- cor(y,results$cv.fit)**2 # cross-validated R2
-  
-  c(raw_rsq=raw_rsq, cv_rsq=cv_rsq)
-}
