@@ -2,10 +2,10 @@ library()
 library(ggplot2)
 library(caret)
 
-
 # Returns rSq value for a linear regression model 
 get_criterion <- function(data.frame) {
 	linear.model <- lm(data.frame)
+	#translate below using train method
 	lm.summary <- summary(linear.model)
 	rss <- lm.summary[[7]][2] # 7th parameter in Summary is Residual Sum Squares (RSS)
 	r.squared <- lm.summary[[8]] # 8th parameter in Summary is rSq
@@ -16,15 +16,10 @@ get_criterion <- function(data.frame) {
 
 main <- function() {
 	file <- read.table("D:/Spring2019/DataScienceII/Projects/CSCI-6360-Project01/data/1.csv", header=TRUE, sep=",")
-	dimensions <- dim(file) 
+   	file <- data.frame(sapply(file, function(x) ifelse(is.na(x), mean(x, na.rm = TRUE), x)))  # Mean Imputation
 	column.names <- colnames(file) 
 	y.column.name <- column.names[1]
 	x.column.names <- column.names[2:length(column.names)]
-
-	# Mean Imputation
-	#for(col in colnames(file)) {
-	#	file$col[is.na(file$col)] <- mean(file$col, na.rm = TRUE)
-	#}
 
 	# Forward Selection
 	fs.columns <- c(y.column.name) # Forward selection column vector
@@ -47,7 +42,7 @@ main <- function() {
 		fs.columns <- append(fs.columns, x.column.names[min.index]) # Forward selection column vector
 		cv.data.frame <- file[,fs.columns]
 		train.control <-trainControl(method = "cv", number = 10)
-		cross.validation <- train(mpg ~ ., data=cv.data.frame, na.action=na.omit, method="lm", trControl= train.control)
+		cross.validation <- train(mpg ~ ., data=cv.data.frame, method="lm", trControl= train.control)
 		x.column.names <- x.column.names[x.column.names != x.column.names[min.index]] # Removing 'min.index' from column names vector
 		adj.rSq <- append(adj.rSq, model.adj.rsq.values[min.index]) # Adding adjusted rSq value for column with maximum critrion
 		rSq <- append(rSq, model.rsq.values[min.index]) # Adding rSq value for column with maximum criterion
