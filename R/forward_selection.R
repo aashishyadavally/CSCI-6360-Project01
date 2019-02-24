@@ -1,6 +1,7 @@
-library()
 library(ggplot2)
 library(caret)
+library(lattice)
+
 
 
 # Returns rSq value for a linear regression model 
@@ -50,7 +51,7 @@ cross_validation <- function(data.frame, choice) {
 # Main function
 main <- function() {
 	#file <- read.table("D:/Spring2019/DataScienceII/Projects/CSCI-6360-Project01/data/1.csv", header=TRUE, sep=",")
-    #file <- read.csv(file="C:/Users/Jayant/Documents/sem2/ds2/CSCI-6360-Project01-Regression/data/1.csv", header=TRUE, sep=",")
+  file <- read.csv(file="C:/Users/Jayant/Documents/sem2/ds2/CSCI-6360-Project01-Regression/data/1.csv", header=TRUE, sep=",")
 	file <- data.frame(sapply(file, function(x) ifelse(is.na(x), mean(x, na.rm = TRUE), x)))  # Mean Imputation
 	column.names <- colnames(file) 
 	y.column.name <- column.names[1]
@@ -82,17 +83,11 @@ main <- function() {
 		if(model.choice == "4") {
 		  #quad regression
 		  cv.data.frame <- file[,fs.columns]
-		  df2 <- cbind(cv.data.frame)
-		  n.col <- ncol(cv.data.frame)
-		  for(j in 2:n.col) {
-		    df2 <- with(cv.dataframe,paste(fs.column.names[j], "2", sep = "^") <-fs.columns[j]*fs.columns[j])
+		  for(column in fs.columns[2:length(fs.columns)]) {
+		    new.column = paste(column,'^2')
+		    cv.data.frame[, new.column] <- cv.data.frame[, column] * cv.data.frame[, column]
 		  }
-		  print('DF2 printed check for quad thing')
-		  print(df2)
-		  
 		  rSqCv <- append(rSqCv, cross_validation(cv.data.frame, model.choice)) # Adding rSqCV value for forward selection vector
-		  
-
 		} else if(model.choice == "5") {
 
 		}
@@ -108,5 +103,4 @@ main <- function() {
 	legend(1,95, legend = c("R-Squared","Adjusted R-Squared", "R=Squared CV"), col = c("red","green", "blue"), lty = 1:2, cex = 0.8)
 }
 
- 
 main()
