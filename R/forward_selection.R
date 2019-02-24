@@ -1,13 +1,31 @@
 library()
 library(ggplot2)
 library(caret)
+#install.packages("bindrcpp")  
+library("bindrcpp")
+#install.packages("dplyr") 
+library("dplyr")
+#install.packages('MASS')
+library('MASS')
+#install.packages('olsrr')
+library('olsrr')
+#install.packages('DAAG')
+library(DAAG)
+library(Hmisc)
+library(psych)
+library(car)
+#install.packages('tidyverse')
+library(tidyverse)
+#install.packages('caret')
+library(caret)
+
 
 # Returns rSq value for a linear regression model 
 get_criterion <- function(data.frame) {
 	linear.model <- lm(data.frame)
 	model<-train(as.formula(paste(colnames(data.frame)[1], "~",
 	                       paste('.', collapse = "+"),
-	                       sep = "")), data = data.frame, method = "lm", trControl = train.control)
+	                       sep = "")), data = data.frame, method = "lm")
 	
 	r.squared<-model$results$Rsquared
 	print(model$results)
@@ -21,8 +39,9 @@ get_criterion <- function(data.frame) {
 }
 
 main <- function() {
-	file <- read.table("D:/Spring2019/DataScienceII/Projects/CSCI-6360-Project01/data/1.csv", header=TRUE, sep=",")
-   	file <- data.frame(sapply(file, function(x) ifelse(is.na(x), mean(x, na.rm = TRUE), x)))  # Mean Imputation
+	#file <- read.table("D:/Spring2019/DataScienceII/Projects/CSCI-6360-Project01/data/1.csv", header=TRUE, sep=",")
+  file <- read.csv(file="C:/Users/Jayant/Documents/sem2/ds2/CSCI-6360-Project01-Regression/data/1.csv", header=TRUE, sep=",")
+	file <- data.frame(sapply(file, function(x) ifelse(is.na(x), mean(x, na.rm = TRUE), x)))  # Mean Imputation
 	column.names <- colnames(file) 
 	y.column.name <- column.names[1]
 	x.column.names <- column.names[2:length(column.names)]
