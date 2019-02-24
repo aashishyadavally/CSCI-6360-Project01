@@ -64,7 +64,7 @@ main <- function() {
 	imp.file <- data.frame(sapply(file, function(x) ifelse(is.na(x), mean(x, na.rm = TRUE), x)))  # Mean Imputation
 	set.seed(123)
 	shuffled.file <- imp.file[sample(nrow(imp.file)), ]
-	split <- as.integer(0.6 * as.integer(nrow(shuffled.file)))																			
+	split <- as.integer(0.6 * as.integer(nrow(shuffled.file)))	# Splitting the dataset into train and test in 60:40 ratio																
 	train.file <- shuffled.file[1 : split, ]
 	test.file <- shuffled.file[split : nrow(shuffled.file), ]
 
@@ -90,23 +90,48 @@ main <- function() {
 		max.index <- which.max(model.rsq.values) # Column name with maximum rSquared value
 		fs.columns <- append(fs.columns, x.column.names[max.index]) # Forward selection column vector
 		x.column.names <- x.column.names[x.column.names != x.column.names[max.index]] # Removing 'max.index' from column names vector
-		fs.col.rSq <- get_rSq(test.file[, fs.columns], model.choice)
-		test.data.n <- nrow(test.file)
-		test.data.p <- ncol(test.file) - 1
-		adj.rSq <- append(adj.rSq, get_adj_rSq(fs.col.rSq, test.data.n, test.data.p)) # Adding adjusted rSq value for column with maximum critrion
-		rSq <- append(rSq, fs.col.rSq) # Adding rSq value for column with maximum criterion
+		
+		# R-Squared and Adjusted R-Squared on Test set; Cross validation on full dataframe
+		# If model choice is 4, column names corresponding to Quad Regression are attached to dataframe
+		# If model choice is 5, column names corresponding to Response Surface are attached to dataframe
+		# Else, other models are implemented, which require a Linear Model, but for model choice 2 and 3,
+		# lambda regularization parameter is added.
 		if(model.choice == "4") {
-		  cv.data.frame <- file[,fs.columns]
-		  for(column in fs.columns[2:length(fs.columns)]) {
-		    new.column = paste(column,'^2')
-		    cv.data.frame[, new.column] <- cv.data.frame[, column] * cv.data.frame[, column]
-		  }
-		  rSqCv <- append(rSqCv, cross_validation(cv.data.frame, model.choice)) # Adding rSqCV value for forward selection vector
+			cv.data.frame <- imp.file[,fs.columns]
+			test.data.frame <- test.file[, fs.columns]
+			for(column in fs.columns[2:length(fs.columns)]) {
+				new.column = paste(column,'^2')
+				test.data.frame[, new.column] <- test.data.frame[, column] * test.data.frame[, column]
+				cv.data.frame[, new.column] <- cv.data.frame[, column] * cv.data.frame[, column]
+			}
+			test.data.n <- nrow(test.data.frame)
+			test.data.p <- ncol(test.data.frame) - 1
+  			rSq <- append(rSq, get_rSq(test.data.frame, model.choice)) # Adding rSq value for column with maximum criterion
+			adj.rSq <- append(adj.rSq, get_adj_rSq(rSq[i], test.data.n, test.data.p)) # Adding adjusted rSq value for column with maximum critrion
+			rSqCv <- append(rSqCv, cross_validation(cv.data.frame, model.choice)) # Adding rSqCV value for forward selection vector
 		} else if(model.choice == "5") {
-
-		}
-		else {
-			cv.data.frame <- shuffled.file[,fs.columns] 
+			cv.data.frame <- imp.file[,fs.columns]
+			test.data.frame <- test.file[, fs.columns]
+			for(i in 1:length(fs.columns)) {
+				for(j in i:length(fs.columns)) {
+					if(i==j) {new.column = paste(fs.columns[i],'^2')}
+					else {new.column = paste(fs.columns[i], '_', fs.columns[j])}
+					test.data.frame[, new.column] <- test.data.frame[, fs.columns[i]] * test.data.frame[, fs.columns[i]]
+					cv.data.frame[, new.column] <- cv.data.frame[, fs.columns[i]] * cv.data.frame[, fs.columns[i]]
+				} 				
+			}
+			test.data.n <- nrow(test.data.frame)
+			test.data.p <- ncol(test.data.frame) - 1
+  			rSq <- append(rSq, get_rSq(test.data.frame, model.choice)) # Adding rSq value for column with maximum criterion
+			adj.rSq <- append(adj.rSq, get_adj_rSq(rSq[i], test.data.n, test.data.p)) # Adding adjusted rSq value for column with maximum critrion
+			rSqCv <- append(rSqCv, cross_validation(cv.data.frame, model.choice)) # Adding rSqCV value for forward selection vector
+		} else {
+			test.data.frame <- test.file[, fs.columns]
+			cv.data.frame <- shuffled.file[,fs.columns]
+			test.data.n	<- nrow(test.data.frame)
+			test.data.p <- ncol(test.data.frame) - 1
+ 			rSq <- append(rSq, get_rSq(test.data.frame, model.choice)) # Adding rSq value for column with maximum criterion
+			adj.rSq <- append(adj.rSq, get_adj_rSq(rSq[i], test.data.n, test.data.p)) # Adding adjusted rSq value for column with maximum critrion		
 			rSqCv <- append(rSqCv, cross_validation(cv.data.frame, model.choice)) # Adding rSqCV value for forward selection vector
 		}
 	}
