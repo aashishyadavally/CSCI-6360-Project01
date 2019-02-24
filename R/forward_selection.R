@@ -80,6 +80,18 @@ main <- function() {
 		adj.rSq <- append(adj.rSq, model.adj.rsq.values[max.index]) # Adding adjusted rSq value for column with maximum critrion
 		rSq <- append(rSq, model.rsq.values[max.index]) # Adding rSq value for column with maximum criterion
 		if(model.choice == "4") {
+		  #quad regression
+		  cv.data.frame <- file[,fs.columns]
+		  df2 <- cbind(cv.data.frame)
+		  n.col <- ncol(cv.data.frame)
+		  for(j in 2:n.col) {
+		    df2 <- with(cv.dataframe,paste(fs.column.names[j], "2", sep = "^") <-fs.columns[j]*fs.columns[j])
+		  }
+		  print('DF2 printed check for quad thing')
+		  print(df2)
+		  
+		  rSqCv <- append(rSqCv, cross_validation(cv.data.frame, model.choice)) # Adding rSqCV value for forward selection vector
+		  
 
 		} else if(model.choice == "5") {
 
@@ -95,5 +107,6 @@ main <- function() {
 	lines(rSqCv,  col = 'blue' )
 	legend(1,95, legend = c("R-Squared","Adjusted R-Squared", "R=Squared CV"), col = c("red","green", "blue"), lty = 1:2, cex = 0.8)
 }
+
  
 main()
