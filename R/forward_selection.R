@@ -1,6 +1,8 @@
 library()
 library(ggplot2)
 library(caret)
+library(lattice)
+#library(glmnet)
 
 
 # Returns rSq value for a linear regression model 
@@ -10,17 +12,27 @@ get_adj_rSq <- function(r.squared, n, p) {
 }
 
 # Returns rSquared value based on minimum RSS/ maximum rSquared
-get_criterion <- function(data.frame) {
-
-	model <- train(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), 
-					data = data.frame, method = "lm")
+get_rSq <- function(data.frame, choice) {
+	if(choice == "1") {
+		model <- train(as.formula(paste( names(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), 
+						data=data.frame, method="lm")	
+	} else if(choice == "2") {
+		model <- train(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), 
+							data=data.frame, method="ridge")
+	} else if(choice == "3") {
+		model <- train(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), 
+							data=data.frame, method="lasso")
+	} else if(choice == "4") {
+		model <- train(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), 
+							data=data.frame, method="lm")
+	} else if(choice == "5") {
+		model <- train(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), 
+							data=data.frame, method="lm") 
+	} else {
+		print("InvalidChoice: Please enter choice between '1' and '5'")
+	}
 	r.squared <- model$results$Rsquared
-	p <- ncol(data.frame) - 1
-	n <- nrow(data.frame)
-	adj.r.squared <- get_adj_rSq(r.squared, n, p)
-	rsq.vector <- c(100*r.squared, 100*adj.r.squared)
-
-	return(rsq.vector)
+	return(100*r.squared)
 }
 
 # Performs cross validation on input data frame
@@ -49,9 +61,15 @@ cross_validation <- function(data.frame, choice) {
 
 # Main function
 main <- function() {
-	#file <- read.table("D:/Spring2019/DataScienceII/Projects/CSCI-6360-Project01/data/1.csv", header=TRUE, sep=",")
+	file <- read.table("D:/Spring2019/DataScienceII/Projects/CSCI-6360-Project01/data/1.csv", header=TRUE, sep=",")
     #file <- read.csv(file="C:/Users/Jayant/Documents/sem2/ds2/CSCI-6360-Project01-Regression/data/1.csv", header=TRUE, sep=",")
-	file <- data.frame(sapply(file, function(x) ifelse(is.na(x), mean(x, na.rm = TRUE), x)))  # Mean Imputation
+	imp.file <- data.frame(sapply(file, function(x) ifelse(is.na(x), mean(x, na.rm = TRUE), x)))  # Mean Imputation
+	set.seed(123)
+	shuffled.file <- imp.file[sample(nrow(imp.file)), ]
+	split <- as.integer(0.6 * as.integer(nrow(shuffled.file)))																			
+	train.file <- shuffled.file[1 : split, ]
+	test.file <- shuffled.file[split : nrow(shuffled.file), ]
+
 	column.names <- colnames(file) 
 	y.column.name <- column.names[1]
 	x.column.names <- column.names[2:length(column.names)]
@@ -69,28 +87,28 @@ main <- function() {
 		for(j in 1:length(x.column.names)) {
 			new.column.vector <- fs.columns
 			new.column.vector <- append(fs.columns, x.column.names[j])
-			model.values <- get_criterion(file[,new.column.vector])
-			model.rsq.values <- append(model.rsq.values, model.values[1])
-			model.adj.rsq.values <- append(model.adj.rsq.values, model.values[2])
-
+			model.rsq.values <- append(model.rsq.values, get_rSq(train.file[,new.column.vector], model.choice))
 		}
-		max.index <- which.max(model.rsq.values) # Column name with minimum RSS value
+		max.index <- which.max(model.rsq.values) # Column name with maximum rSquared value
 		fs.columns <- append(fs.columns, x.column.names[max.index]) # Forward selection column vector
-		x.column.names <- x.column.names[x.column.names != x.column.names[max.index]] # Removing 'min.index' from column names vector
-		adj.rSq <- append(adj.rSq, model.adj.rsq.values[max.index]) # Adding adjusted rSq value for column with maximum critrion
-		rSq <- append(rSq, model.rsq.values[max.index]) # Adding rSq value for column with maximum criterion
+		x.column.names <- x.column.names[x.column.names != x.column.names[max.index]] # Removing 'max.index' from column names vector
+		fs.col.rSq <- get_rSq(test.file[, fs.columns], model.choice)
+		test.data.n <- nrow(test.file)
+		test.data.p <- ncol(test.file) - 1
+		adj.rSq <- append(adj.rSq, get_adj_rSq(fs.col.rSq, test.data.n, test.data.p)) # Adding adjusted rSq value for column with maximum critrion
+		rSq <- append(rSq, fs.col.rSq) # Adding rSq value for column with maximum criterion
 		if(model.choice == "4") {
 
 		} else if(model.choice == "5") {
 
 		}
 		else {
-			cv.data.frame <- file[,fs.columns] 
+			cv.data.frame <- shuffled.file[,fs.columns] 
 			rSqCv <- append(rSqCv, cross_validation(cv.data.frame, model.choice)) # Adding rSqCV value for forward selection vector
 		}
 	}
 	#Plotting rSq and rSqCV
-	plot(rSq, type = 'l', col = 'red', main = "Linear Regression", ylab = "Percentage", ylim = c(0,100))
+	plot(rSq, type = 'l', col = 'red', main = "Regression Problem in R", ylab = "Percentage", ylim = c(0,100))
 	lines(adj.rSq,  col = 'green')
 	lines(rSqCv,  col = 'blue' )
 	legend(1,95, legend = c("R-Squared","Adjusted R-Squared", "R=Squared CV"), col = c("red","green", "blue"), lty = 1:2, cex = 0.8)
