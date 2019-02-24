@@ -1,6 +1,8 @@
 library(ggplot2)
 library(caret)
 library(lattice)
+library(lmridge)
+library(lars)
 
 
 # Returns rSq value for a linear regression model 
@@ -11,26 +13,35 @@ get_adj_rSq <- function(r.squared, n, p) {
 
 # Returns rSquared value based on minimum RSS/ maximum rSquared
 get_rSq <- function(data.frame, choice) {
-	if(choice == "1") {
-		model <- train(as.formula(paste( names(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), 
-						data=data.frame, method="lm")	
-	} else if(choice == "2") {
-		model <- train(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), 
-							data=data.frame, method="ridge")
-	} else if(choice == "3") {
-		model <- train(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), 
-							data=data.frame, method="lasso")
-	} else if(choice == "4") {
-		model <- train(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), 
-							data=data.frame, method="lm")
-	} else if(choice == "5") {
-		model <- train(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), 
-							data=data.frame, method="lm") 
+	if(choice == "1") {	# Simple Regression
+		model <- lm(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), data=data.frame)
+		r.squared <- summary(model)[[8]]
+	} else if(choice == "2") { # Ridge Regression
+		if(as.integer(dim(data.frame)[2]) <=3) {	# Requires atleast two features in 'x' matrix
+			r.squared <- 0
+		} else {
+			model <- lmridge(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), data = data.frame, K = c(0.1, 0.001))
+			r.squared <- max(rstats1(model)$R2)
+		}
+	} else if(choice == "3") {	# Lasso Regression
+		if(as.integer(dim(data.frame)[2]) <=3) {	# Requires atleast two features in 'x' matrix
+			r.squared <- 0
+		} else {
+			x <- as.matrix(data.frame[, 2:dim(data.frame)[2]])
+			y <- as.vector(data.frame[, 1])
+			model <- lars(x, y, type = 'lasso')
+			r.squared <- max(model$R2)
+		}
+	} else if(choice == "4") {	# Quad Regression
+		model <- lm(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), data=data.frame)
+		r.squared <- summary(model)[[8]]
+	} else if(choice == "5") {	# Response Surface
+		model <- lm(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), data=data.frame) 
+		r.squared <- summary(model)[[8]]
 	} else {
 		print("InvalidChoice: Please enter choice between '1' and '5'")
-	}
-	r.squared <- model$results$Rsquared
-	return(100*r.squared)
+	}	
+return(100*r.squared)
 }
 
 # Performs cross validation on input data frame
@@ -38,23 +49,36 @@ cross_validation <- function(data.frame, choice) {
 	train.control <-trainControl(method = "cv", number = 10)
 	if(choice == "1") {
 		cv.results <- train(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), 
-							data=data.frame, method="lm", trControl= train.control)	
+							data=data.frame, method="lm", trControl= train.control)
+		return.value <- 100*cv.results$results$Rsquared	
 	} else if(choice == "2") {
+		if(as.integer(dim(data.frame)[2]) <=3){
+			return.value <- 0
+		} else {
 		cv.results <- train(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), 
 							data=data.frame, method="ridge", trControl= train.control)
+		return.value <- 100*cv.results$results$Rsquared
+		}
 	} else if(choice == "3") {
+		if(as.integer(dim(data.frame)[2]) <=3){
+			return.value <- 0
+		} else {
 		cv.results <- train(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), 
 							data=data.frame, method="lasso", trControl= train.control)
+		return.value <- 100*cv.results$results$Rsquared
+		}
 	} else if(choice == "4") {
 		cv.results <- train(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), 
 							data=data.frame, method="lm", trControl= train.control)  # The dataframe will be different for Quad Regression
+		return.value <- 100*cv.results$results$Rsquared
 	} else if(choice == "5") {
 		cv.results <- train(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), 
 							data=data.frame, method="lm", trControl= train.control) # The dataframe will be different for Response Surface
+		return.value <- 100*cv.results$results$Rsquared
 	} else {
 		print("InvalidChoice: Please enter choice between '1' and '5'")
 	}
-	return(100*cv.results$results$Rsquared)
+	return(return.value)
 }
 
 # Main function
@@ -63,7 +87,7 @@ main <- function() {
     #file <- read.csv(file="C:/Users/Jayant/Documents/sem2/ds2/CSCI-6360-Project01-Regression/data/1.csv", header=TRUE, sep=",")
 	imp.file <- data.frame(sapply(file, function(x) ifelse(is.na(x), mean(x, na.rm = TRUE), x)))  # Mean Imputation
 	set.seed(123)
-	shuffled.file <- imp.file[sample(nrow(imp.file)), ]
+	shuffled.file <- imp.file[sample(nrow(imp.file)), ]  # Shuffling the dataset
 	split <- as.integer(0.6 * as.integer(nrow(shuffled.file)))	# Splitting the dataset into train and test in 60:40 ratio																
 	train.file <- shuffled.file[1 : split, ]
 	test.file <- shuffled.file[split : nrow(shuffled.file), ]
@@ -136,9 +160,9 @@ main <- function() {
 		}
 	}
 	#Plotting rSq and rSqCV
-	plot(rSq, type = 'l', col = 'red', main = "Regression Problem in R", ylab = "Percentage", ylim = c(0,100))
-	lines(adj.rSq,  col = 'green')
-	lines(rSqCv,  col = 'blue' )
+	plot(rSq[1:length(rSq)], type = 'l', col = 'red', main = "Regression Problem in R", ylab = "Percentage", ylim = c(0,100))
+	lines(adj.rSq[1:length(adj.rSq)],  col = 'green')
+	lines(rSqCv[1:length(rSqCv)],  col = 'blue' )
 	legend(1,95, legend = c("R-Squared","Adjusted R-Squared", "R=Squared CV"), col = c("red","green", "blue"), lty = 1:2, cex = 0.8)
 }
 
