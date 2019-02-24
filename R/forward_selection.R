@@ -1,11 +1,13 @@
 library()
 library(ggplot2)
+library(caret)
 #ibrary(DAAG) # For cross validation
 
 
 # Returns rSq value for a linear regression model 
 get_criterion <- function(data.frame) {
 	linear.model <- lm(data.frame)
+	#translate below using train method
 	lm.summary <- summary(linear.model)
 	rss <- lm.summary[[7]][2] # 7th parameter in Summary is Residual Sum Squares (RSS)
 	r.squared <- lm.summary[[8]] # 8th parameter in Summary is rSq
@@ -15,8 +17,19 @@ get_criterion <- function(data.frame) {
 }
 
 main <- function() {
-	file <- read.table("D:/Spring2019/DataScienceII/Projects/CSCI-6360-Project01/data/1.csv", header=TRUE, sep=",")
-	dimensions <- dim(file) 
+	#file <- read.table("D:/Spring2019/DataScienceII/Projects/CSCI-6360-Project01/data/1.csv", header=TRUE, sep=",")
+   file <- read.csv("C:/Users/Jayant/Documents/sem2/ds2/CSCI-6360-Project01-Regression/data/1.csv", header=TRUE, sep=",")
+   
+   file <- data.frame(
+     sapply(
+       file,
+       function(x) ifelse(is.na(x),
+                          mean(x, na.rm = TRUE),
+                          x)))
+   
+   head(data_impute_mean, n=20)
+   
+  dimensions <- dim(file) 
 	column.names <- colnames(file) 
 	y.column.name <- column.names[1]
 	x.column.names <- column.names[2:length(column.names)]
