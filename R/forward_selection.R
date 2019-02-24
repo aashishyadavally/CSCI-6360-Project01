@@ -7,6 +7,12 @@ library(caret)
 # Returns rSq value for a linear regression model 
 get_criterion <- function(data.frame) {
 	linear.model <- lm(data.frame)
+	model<-train(as.formula(paste(colnames(data.frame)[1], "~",
+	                       paste('.', collapse = "+"),
+	                       sep = "")), data = data.frame, method = "lm", trControl = train.control)
+	
+	r.squared<-model$results$Rsquared
+	print(model$results)
 	#translate below using train method
 	lm.summary <- summary(linear.model)
 	rss <- lm.summary[[7]][2] # 7th parameter in Summary is Residual Sum Squares (RSS)
