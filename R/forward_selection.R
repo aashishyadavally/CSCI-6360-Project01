@@ -1,8 +1,6 @@
-library()
 library(ggplot2)
 library(caret)
 library(lattice)
-#library(glmnet)
 
 
 # Returns rSq value for a linear regression model 
@@ -98,7 +96,12 @@ main <- function() {
 		adj.rSq <- append(adj.rSq, get_adj_rSq(fs.col.rSq, test.data.n, test.data.p)) # Adding adjusted rSq value for column with maximum critrion
 		rSq <- append(rSq, fs.col.rSq) # Adding rSq value for column with maximum criterion
 		if(model.choice == "4") {
-
+		  cv.data.frame <- file[,fs.columns]
+		  for(column in fs.columns[2:length(fs.columns)]) {
+		    new.column = paste(column,'^2')
+		    cv.data.frame[, new.column] <- cv.data.frame[, column] * cv.data.frame[, column]
+		  }
+		  rSqCv <- append(rSqCv, cross_validation(cv.data.frame, model.choice)) # Adding rSqCV value for forward selection vector
 		} else if(model.choice == "5") {
 
 		}
@@ -113,5 +116,5 @@ main <- function() {
 	lines(rSqCv,  col = 'blue' )
 	legend(1,95, legend = c("R-Squared","Adjusted R-Squared", "R=Squared CV"), col = c("red","green", "blue"), lty = 1:2, cex = 0.8)
 }
- 
+
 main()
