@@ -7,6 +7,8 @@ library(lars)
 
 # Returns rSq value for a linear regression model 
 get_adj_rSq <- function(r.squared, n, p) {
+
+
 	rsq.cv <- 1 - (1 - r.squared)*(n - 1) / (n - p - 1)
 	return(rsq.cv)
 }
@@ -39,7 +41,7 @@ get_rSq <- function(data.frame, choice) {
 		model <- lm(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), data=data.frame) 
 		r.squared <- summary(model)[[8]]
 	} else {
-		print("InvalidChoice: Please enter choice between '1' and '5'")
+		print("InvalidChoice: Please enter choice between '1' and '5'.")
 	}	
 return(100*r.squared)
 }
@@ -47,44 +49,56 @@ return(100*r.squared)
 # Performs cross validation on input data frame
 cross_validation <- function(data.frame, choice) {
 	train.control <-trainControl(method = "cv", number = 10)
-	if(choice == "1") {
+	if(choice == "1") {	# Simple Regression
 		cv.results <- train(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), 
 							data=data.frame, method="lm", trControl= train.control)
 		return.value <- 100*cv.results$results$Rsquared	
-	} else if(choice == "2") {
-		if(as.integer(dim(data.frame)[2]) <=3){
+	} else if(choice == "2") {	# Ridge Regression
+		if(as.integer(dim(data.frame)[2]) <=3){	# Requires atleast two features in X-matrix
 			return.value <- 0
 		} else {
 		cv.results <- train(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), 
 							data=data.frame, method="ridge", trControl= train.control)
 		return.value <- 100*cv.results$results$Rsquared
 		}
-	} else if(choice == "3") {
-		if(as.integer(dim(data.frame)[2]) <=3){
+	} else if(choice == "3") {	# Lasso Regression
+		if(as.integer(dim(data.frame)[2]) <=3){	# Requires atleast two features in X-matrix
 			return.value <- 0
 		} else {
 		cv.results <- train(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), 
 							data=data.frame, method="lasso", trControl= train.control)
 		return.value <- 100*cv.results$results$Rsquared
 		}
-	} else if(choice == "4") {
+	} else if(choice == "4") {	# Quad Regression
 		cv.results <- train(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), 
 							data=data.frame, method="lm", trControl= train.control)  # The dataframe will be different for Quad Regression
 		return.value <- 100*cv.results$results$Rsquared
-	} else if(choice == "5") {
+	} else if(choice == "5") {	# Response Surface
 		cv.results <- train(as.formula(paste(colnames(data.frame)[1], "~", paste('.', collapse = "+"),sep = "")), 
 							data=data.frame, method="lm", trControl= train.control) # The dataframe will be different for Response Surface
 		return.value <- 100*cv.results$results$Rsquared
 	} else {
-		print("InvalidChoice: Please enter choice between '1' and '5'")
+		print("InvalidChoice: Please enter choice between '1' and '5'.")
 	}
 	return(return.value)
 }
 
 # Main function
 main <- function() {
-	file <- read.table("D:/Spring2019/DataScienceII/Projects/CSCI-6360-Project01/data/1.csv", header=TRUE, sep=",")
-    #file <- read.csv(file="C:/Users/Jayant/Documents/sem2/ds2/CSCI-6360-Project01-Regression/data/1.csv", header=TRUE, sep=",")
+	cat(" Select dataset: \n\t 1. Auto MPG \n\t 2. Beijing PM2.5 Dataset \n\t 3. Concrete Compressive Strength Dataset \n\t 4. Real Estate Valuation Dataset \n\t 5. Parkinson's Tele Monitoring \n\t 6. GPS Trajectories")
+	cat("\n\t 7. Appliances Energy Prediction  \n\t 8. Combined Cycle Powerplant \n\t 9. CSM Dataset \n\t 10. Naval Propulsion Dataset \n\t 11. For other datasets, enter: /correct/path/to/data/csv\n")
+	dataset.choice <- readline(prompt="\t\tEnter your choice:")
+	
+	if(as.integer(dataset.choice)>0 && as.integer(dataset.choice)<11) {
+		path <- paste("D:/Spring2019/DataScienceII/Projects/CSCI-6360-Project01/data/", dataset.choice, ".csv", sep="")
+	}
+	else if(as.integer(dataset.choice)==11) {path <- readline(prompt="Enter correct path of your dataset: ")}
+	else {
+		print("Invalid Choice: Please enter choice between '1' and '11'.")
+		quit()
+	}
+	
+	file <- read.table(file=path, header=TRUE, sep=",")
 	imp.file <- data.frame(sapply(file, function(x) ifelse(is.na(x), mean(x, na.rm = TRUE), x)))  # Mean Imputation
 	set.seed(123)
 	shuffled.file <- imp.file[sample(nrow(imp.file)), ]  # Shuffling the dataset
