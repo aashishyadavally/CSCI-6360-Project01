@@ -150,7 +150,7 @@ object RegressionTest extends App {
 		val RSqNormal = new VectorD (x.dim2)
 		val RSqAdj = new VectorD (x.dim2) 
 		val RSqCV = new VectorD (x.dim2)
-		val n = VectorD.range(1, x.dim2 + 1)
+		val n = VectorD.range(1, x.dim2)
 		
 		for (j <- 1 until x.dim2){
 			val (add_var, new_param, new_qof) = rg_sim.forwardSel(fs_cols, false)
@@ -162,11 +162,11 @@ object RegressionTest extends App {
 			RSqCV(j) = 100*cv.simple_regression_cv()		// Calculating RSqCV for each feature selected
 		}
 		// Saving R-Squared, RBar-Squared, RCV-Squared vectors into a matrix, to plot them concurrently
-		val plot_mat = new MatrixD (3, x.dim2)
-		plot_mat.update(0, RSqAdj)
-		plot_mat.update(1, RSqNormal)
-		plot_mat.update(2, RSqCV)
-		new PlotM(n, plot_mat, lines=true).setTitle("Simple Regression : Comparison of R-Squared, RBar-Squared, RCV-Squared")
+		val plot_mat = new MatrixD (3, x.dim2-1)
+		plot_mat.update(0, RSqAdj(1 until x.dim2))
+		plot_mat.update(1, RSqNormal(1 until x.dim2))
+		plot_mat.update(2, RSqCV(1 until x.dim2))
+		new PlotM(n, plot_mat, lines=true).saveImage("regression_simple.png")
 		banner ("Successfully implemented Simple Regression!")
 	}
 	
@@ -179,7 +179,7 @@ object RegressionTest extends App {
 		val RSqNormal = new VectorD (x.dim2)	
 		val RSqAdj = new VectorD (x.dim2) 
 		val RSqCV = new VectorD (x.dim2)
-		val n = VectorD.range(0, x.dim2 - 1)
+		val n = VectorD.range(1, x.dim2)
 		for (j <- 1 until x.dim2){
 			val (add_var, new_param, new_qof) = rg_WLS.forwardSel(fs_cols, false)
 			fs_cols += add_var	
@@ -190,11 +190,11 @@ object RegressionTest extends App {
 			RSqCV(j) = 100*cv.regression_wls_cv()			// Calculating RSqCV for each feature selected
 		}
 		// Saving R-Squared, RBar-Squared, RCV-Squared vectors into a matrix, to plot them concurrently
-		val plot_mat = new MatrixD (3, x.dim2)
-		plot_mat.update(0, RSqAdj)
-		plot_mat.update(1, RSqNormal)
-		plot_mat.update(2, RSqCV)
-		new PlotM(n, plot_mat, lines=true).setTitle("Regression_WLS : Comparison of R-Squared, RBar-Squared, RCV-Squared")
+		val plot_mat = new MatrixD (3, x.dim2-1)
+		plot_mat.update(0, RSqAdj(1 until x.dim2))
+		plot_mat.update(1, RSqNormal(1 until x.dim2))
+		plot_mat.update(2, RSqCV(1 until x.dim2))
+		new PlotM(n, plot_mat, lines=true).saveImage("regression_WLS.png")
 		banner ("Successfully implemented Regression WLS!")
 	}
 
@@ -207,7 +207,7 @@ object RegressionTest extends App {
 		val RSqNormal = new VectorD(x.dim2)
 		val RSqAdj = new VectorD(x.dim2)
 		val RSqCV = new VectorD(x.dim2)
-		val n = VectorD.range(1, x.dim2 + 1)
+		val n = VectorD.range(3, x.dim2 + 2)
 		
 		for (j <- 1 until x.dim2){
 			val (add_var, new_param, new_qof) = rg_rid.forwardSel(fs_cols, false)
@@ -219,11 +219,11 @@ object RegressionTest extends App {
 			RSqCV(j) = 100*cv.ridge_regression_cv()			// Calculating RSqCV for each feature selected
 		}
 		// Saving R-Squared, RBar-Squared, RCV-Squared vectors into a matrix, to plot them concurrently
-		val plot_mat = new MatrixD(3, x.dim2)
-		plot_mat.update(0, RSqAdj)
-		plot_mat.update(1, RSqNormal)
-		plot_mat.update(2, RSqCV)
-		new PlotM(n, plot_mat, lines=true).setTitle("Ridge Regression : Comparison of R-Squared, RBar-Squared, RCV-Squared")
+		val plot_mat = new MatrixD(3, x.dim2-1)
+		plot_mat.update(0, RSqAdj(1 until x.dim2))
+		plot_mat.update(1, RSqNormal(1 until x.dim2))
+		plot_mat.update(2, RSqCV(1 until x.dim2))
+		new PlotM(n, plot_mat, lines=true).saveImage("ridge_regression.png")
 		banner ("Successfully implemented Ridge Regression!")
 	}
 
@@ -239,7 +239,7 @@ object RegressionTest extends App {
 		val RSqNormal = new VectorD(num_terms)
 		val RSqAdj = new VectorD(num_terms)
 		val RSqCV = new VectorD(num_terms)
-		val n = VectorD.range(1, num_terms)
+		val n = VectorD.range(3, num_terms+2)
 		
 		for (j <- 1 until num_terms){
 			val (add_var, new_param, new_qof) = rg_quad.forwardSel(fs_cols, false)
@@ -251,11 +251,11 @@ object RegressionTest extends App {
 			RSqCV(j) = 100*cv.quad_regression_cv()			// Calculating RSqCV for each feature selected
 		}
 		// Saving R-Squared, RBar-Squared, RCV-Squared vectors into a matrix, to plot them concurrently
-		val plot_mat = new MatrixD(3, num_terms)
-		plot_mat.update(0, RSqAdj)
-		plot_mat.update(1, RSqNormal)
-		plot_mat.update(2, RSqCV)
-		new PlotM(n, plot_mat, lines=true).setTitle("Quad Regression : Comparison of R-Squared, RBar-Squared, RCV-Squared")
+		val plot_mat = new MatrixD(3, num_terms-1)
+		plot_mat.update(0, RSqAdj(1 until num_terms))
+		plot_mat.update(1, RSqNormal(1 until num_terms))
+		plot_mat.update(2, RSqCV(1 until num_terms))
+		new PlotM(n, plot_mat, lines=true).saveImage("quad_regression.png")
 
 		banner ("Successfully implemented Quadratic Regression!")		
 	}
@@ -271,7 +271,7 @@ object RegressionTest extends App {
 		val RSqNormal = new VectorD(x.dim2)
 		val RSqAdj = new VectorD(x.dim2)
 		val RSqCV = new VectorD(x.dim2)
-		val n = VectorD.range(1, x.dim2 + 1)
+		val n = VectorD.range(3, x.dim2 + 3)
 		
 		for (j <- 1 until x.dim2){
 			val (add_var, new_param, new_qof) = rg_lasso.forwardSel(fs_cols, false)
@@ -287,7 +287,7 @@ object RegressionTest extends App {
 		plot_mat.update(0, RSqAdj)
 		plot_mat.update(1, RSqNormal)
 		plot_mat.update(2, RSqCV)
-		new PlotM(n, plot_mat, lines=true).setTitle("Lasso Regression : Comparison of R-Squared, RBar-Squared, RCV-Squared")
+		new PlotM(n, plot_mat, lines=true).saveImage("lasso_regression.png")
 		banner ("Successfully implemented Lasso Regression!")
 	}
 	
@@ -302,7 +302,7 @@ object RegressionTest extends App {
 		val RSqNormal = new VectorD(num_terms)
 		val RSqAdj = new VectorD(num_terms)
 		val RSqCV = new VectorD(num_terms)
-		val n = VectorD.range(0, num_terms)
+		val n = VectorD.range(1, num_terms+1)
 		
 		for (j <- 1 until num_terms){
 			val (add_var, new_param, new_qof) = rg_rs.forwardSel(fs_cols, false)
@@ -319,7 +319,7 @@ object RegressionTest extends App {
 		plot_mat.update(0, RSqAdj)
 		plot_mat.update(1, RSqNormal)
 		plot_mat.update(2, RSqCV)
-		new PlotM(n, plot_mat, lines=true).setTitle("Response Surface : Comparison of R-Squared, RBar-Squared, RCV-Squared")
+		new PlotM(n, plot_mat, lines=true).saveImage("response_surface.png")
 		banner ("Successfully implemented Response Surface!") 
 	}
 	
