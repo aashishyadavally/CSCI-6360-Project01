@@ -14,8 +14,6 @@ library(lars)
 
 # Returns rSq value for a linear regression model 
 get_adj_rSq <- function(r.squared, n, p) {
-
-
 	rsq.cv <- 1 - (1 - r.squared)*(n - 1) / (n - p - 1)
 	return(rsq.cv)
 }
@@ -107,12 +105,6 @@ main <- function() {
 	
 	file <- read.table(file=path, header=TRUE, sep=",")
 	imp.file <- data.frame(sapply(file, function(x) ifelse(is.na(x), mean(x, na.rm = TRUE), x)))  # Mean Imputation
-	set.seed(123)
-	shuffled.file <- imp.file[sample(nrow(imp.file)), ]  # Shuffling the dataset
-	split <- as.integer(0.6 * as.integer(nrow(shuffled.file)))	# Splitting the dataset into train and test in 60:40 ratio																
-	train.file <- shuffled.file[1 : split, ]
-	test.file <- shuffled.file[split : nrow(shuffled.file), ]
-
 	column.names <- colnames(file) 
 	y.column.name <- column.names[1]
 	x.column.names <- column.names[2:length(column.names)]
@@ -130,7 +122,7 @@ main <- function() {
 		for(j in 1:length(x.column.names)) {
 			new.column.vector <- fs.columns
 			new.column.vector <- append(fs.columns, x.column.names[j])
-			model.rsq.values <- append(model.rsq.values, get_rSq(train.file[,new.column.vector], model.choice))
+			model.rsq.values <- append(model.rsq.values, get_rSq(imp.file[,new.column.vector], model.choice))
 		}
 		max.index <- which.max(model.rsq.values) # Column name with maximum rSquared value
 		fs.columns <- append(fs.columns, x.column.names[max.index]) # Forward selection column vector
@@ -143,40 +135,35 @@ main <- function() {
 		# lambda regularization parameter is added.
 		if(model.choice == "4") {
 			cv.data.frame <- imp.file[,fs.columns]
-			test.data.frame <- test.file[, fs.columns]
 			for(column in fs.columns[2:length(fs.columns)]) {
 				new.column = paste(column,'^2')
-				test.data.frame[, new.column] <- test.data.frame[, column] * test.data.frame[, column]
 				cv.data.frame[, new.column] <- cv.data.frame[, column] * cv.data.frame[, column]
 			}
-			test.data.n <- nrow(test.data.frame)
-			test.data.p <- ncol(test.data.frame) - 1
-  			rSq <- append(rSq, get_rSq(test.data.frame, model.choice)) # Adding rSq value for column with maximum criterion
-			adj.rSq <- append(adj.rSq, get_adj_rSq(rSq[i], test.data.n, test.data.p)) # Adding adjusted rSq value for column with maximum critrion
+			data.n <- nrow(cv.data.frame)
+			data.p <- ncol(cv.data.frame) - 1
+  			rSq <- append(rSq, get_rSq(cv.data.frame, model.choice)) # Adding rSq value for column with maximum criterion
+			adj.rSq <- append(adj.rSq, get_adj_rSq(rSq[i], data.n, data.p)) # Adding adjusted rSq value for column with maximum critrion
 			rSqCv <- append(rSqCv, cross_validation(cv.data.frame, model.choice)) # Adding rSqCV value for forward selection vector
 		} else if(model.choice == "5") {
 			cv.data.frame <- imp.file[,fs.columns]
-			test.data.frame <- test.file[, fs.columns]
 			for(i in 1:length(fs.columns)) {
 				for(j in i:length(fs.columns)) {
 					if(i==j) {new.column = paste(fs.columns[i],'^2')}
 					else {new.column = paste(fs.columns[i], '_', fs.columns[j])}
-					test.data.frame[, new.column] <- test.data.frame[, fs.columns[i]] * test.data.frame[, fs.columns[i]]
 					cv.data.frame[, new.column] <- cv.data.frame[, fs.columns[i]] * cv.data.frame[, fs.columns[i]]
 				} 				
 			}
-			test.data.n <- nrow(test.data.frame)
-			test.data.p <- ncol(test.data.frame) - 1
-  			rSq <- append(rSq, get_rSq(test.data.frame, model.choice)) # Adding rSq value for column with maximum criterion
-			adj.rSq <- append(adj.rSq, get_adj_rSq(rSq[i], test.data.n, test.data.p)) # Adding adjusted rSq value for column with maximum critrion
+			data.n <- nrow(cv.data.frame)
+			data.p <- ncol(cv.data.frame) - 1
+  			rSq <- append(rSq, get_rSq(cv.data.frame, model.choice)) # Adding rSq value for column with maximum criterion
+			adj.rSq <- append(adj.rSq, get_adj_rSq(rSq[i], data.n, data.p)) # Adding adjusted rSq value for column with maximum critrion
 			rSqCv <- append(rSqCv, cross_validation(cv.data.frame, model.choice)) # Adding rSqCV value for forward selection vector
 		} else {
-			test.data.frame <- test.file[, fs.columns]
-			cv.data.frame <- shuffled.file[,fs.columns]
-			test.data.n	<- nrow(test.data.frame)
-			test.data.p <- ncol(test.data.frame) - 1
- 			rSq <- append(rSq, get_rSq(test.data.frame, model.choice)) # Adding rSq value for column with maximum criterion
-			adj.rSq <- append(adj.rSq, get_adj_rSq(rSq[i], test.data.n, test.data.p)) # Adding adjusted rSq value for column with maximum critrion		
+			cv.data.frame <- imp.file[,fs.columns]
+			data.n	<- nrow(cv.data.frame)
+			data.p <- ncol(cv.data.frame) - 1
+ 			rSq <- append(rSq, get_rSq(cv.data.frame, model.choice)) # Adding rSq value for column with maximum criterion
+			adj.rSq <- append(adj.rSq, get_adj_rSq(rSq[i], data.n, data.p)) # Adding adjusted rSq value for column with maximum critrion		
 			rSqCv <- append(rSqCv, cross_validation(cv.data.frame, model.choice)) # Adding rSqCV value for forward selection vector
 		}
 	}
