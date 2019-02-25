@@ -154,12 +154,14 @@ object RegressionTest extends App {
 		
 		for (j <- 1 until x.dim2){
 			val (add_var, new_param, new_qof) = rg_sim.forwardSel(fs_cols, false)
-			fs_cols += add_var
-			RSqNormal(j) = 100*new_qof(0)	
-			RSqAdj(j) = 100*new_qof(7)
-			val x_cv = x.selectCols(fs_cols.toArray)	// Obtaining X-matrix for selected features
-			val cv = new cross_validation(x_cv, y)
-			RSqCV(j) = 100*cv.simple_regression_cv()		// Calculating RSqCV for each feature selected
+			if (add_var != -1) {
+				fs_cols += add_var
+				RSqNormal(j) = 100*new_qof(0)	
+				RSqAdj(j) = 100*new_qof(7)
+				val x_cv = x.selectCols(fs_cols.toArray)	// Obtaining X-matrix for selected features
+				val cv = new cross_validation(x_cv, y)
+				RSqCV(j) = 100*cv.simple_regression_cv()	// Calculating RSqCV for each feature selected
+			}		
 		}
 		// Saving R-Squared, RBar-Squared, RCV-Squared vectors into a matrix, to plot them concurrently
 		val plot_mat = new MatrixD (3, x.dim2-1)
@@ -182,12 +184,14 @@ object RegressionTest extends App {
 		val n = VectorD.range(1, x.dim2)
 		for (j <- 1 until x.dim2){
 			val (add_var, new_param, new_qof) = rg_WLS.forwardSel(fs_cols, false)
-			fs_cols += add_var	
-			RSqNormal(j) = 100*new_qof(0)
-			RSqAdj (j) = 100*new_qof(7)
-			val x_cv = x.selectCols(fs_cols.toArray)	// Obtaining X-matrix for selected features
-			val cv = new cross_validation(x_cv, y)		
-			RSqCV(j) = 100*cv.regression_wls_cv()			// Calculating RSqCV for each feature selected
+			if (add_var != -1) {
+				fs_cols += add_var	
+				RSqNormal(j) = 100*new_qof(0)
+				RSqAdj (j) = 100*new_qof(7)
+				val x_cv = x.selectCols(fs_cols.toArray)	// Obtaining X-matrix for selected features
+				val cv = new cross_validation(x_cv, y)		
+				RSqCV(j) = 100*cv.regression_wls_cv()			// Calculating RSqCV for each feature selected
+			}
 		}
 		// Saving R-Squared, RBar-Squared, RCV-Squared vectors into a matrix, to plot them concurrently
 		val plot_mat = new MatrixD (3, x.dim2-1)
@@ -211,12 +215,14 @@ object RegressionTest extends App {
 		
 		for (j <- 1 until x.dim2){
 			val (add_var, new_param, new_qof) = rg_rid.forwardSel(fs_cols, false)
-			fs_cols += add_var
-			RSqNormal (j) = 100*new_qof (0)
-			RSqAdj (j) = 100*new_qof(7)
-			val x_cv = x.selectCols(fs_cols.toArray)	// Obtaining X-matrix for selected features
-			val cv = new cross_validation(x_cv, y)
-			RSqCV(j) = 100*cv.ridge_regression_cv()			// Calculating RSqCV for each feature selected
+			if (add_var != -1) {
+				fs_cols += add_var
+				RSqNormal (j) = 100*new_qof (0)
+				RSqAdj (j) = 100*new_qof(7)
+				val x_cv = x.selectCols(fs_cols.toArray)	// Obtaining X-matrix for selected features
+				val cv = new cross_validation(x_cv, y)
+				RSqCV(j) = 100*cv.ridge_regression_cv()			// Calculating RSqCV for each feature selected
+			}
 		}
 		// Saving R-Squared, RBar-Squared, RCV-Squared vectors into a matrix, to plot them concurrently
 		val plot_mat = new MatrixD(3, x.dim2-1)
@@ -243,12 +249,14 @@ object RegressionTest extends App {
 		
 		for (j <- 1 until num_terms){
 			val (add_var, new_param, new_qof) = rg_quad.forwardSel(fs_cols, false)
-			fs_cols += add_var
-			RSqNormal (j) = 100*new_qof (0)
-			RSqAdj (j) = 100*new_qof(7)
-			val x_cv = x.selectCols(fs_cols.toArray)	// Obtaining X-matrix for selected features
-			val cv = new cross_validation(x_cv, y)
-			RSqCV(j) = 100*cv.quad_regression_cv()			// Calculating RSqCV for each feature selected
+			if (add_var != -1) {
+				fs_cols += add_var
+				RSqNormal (j) = 100*new_qof (0)
+				RSqAdj (j) = 100*new_qof(7)
+				val x_cv = x.selectCols(fs_cols.toArray)	// Obtaining X-matrix for selected features
+				val cv = new cross_validation(x_cv, y)
+				RSqCV(j) = 100*cv.quad_regression_cv()			// Calculating RSqCV for each feature selected
+			}
 		}
 		// Saving R-Squared, RBar-Squared, RCV-Squared vectors into a matrix, to plot them concurrently
 		val plot_mat = new MatrixD(3, num_terms-1)
@@ -275,12 +283,14 @@ object RegressionTest extends App {
 		
 		for (j <- 1 until x.dim2){
 			val (add_var, new_param, new_qof) = rg_lasso.forwardSel(fs_cols, false)
-			fs_cols += add_var
-			RSqNormal (j) = 100*new_qof (0)
-			RSqAdj (j) = 100*new_qof(7)
-			val x_cv = x.selectCols(fs_cols.toArray)	// Obtaining X-matrix for selected features
-			val cv = new cross_validation(x_cv, y)
-			RSqCV(j) = 100*cv.lasso_regression_cv()			// Calculating RSqCV for each feature selected
+			if (add_var != -1) {
+				fs_cols += add_var
+				RSqNormal (j) = 100*new_qof (0)
+				RSqAdj (j) = 100*new_qof(7)
+				val x_cv = x.selectCols(fs_cols.toArray)	// Obtaining X-matrix for selected features
+				val cv = new cross_validation(x_cv, y)
+				RSqCV(j) = 100*cv.lasso_regression_cv()			// Calculating RSqCV for each feature selected
+			}
 		}
 		// Saving R-Squared, RBar-Squared, RCV-Squared vectors into a matrix, to plot them concurrently
 		val plot_mat = new MatrixD(3, x.dim2)
@@ -306,13 +316,15 @@ object RegressionTest extends App {
 		
 		for (j <- 1 until num_terms){
 			val (add_var, new_param, new_qof) = rg_rs.forwardSel(fs_cols, false)
-			fs_cols += add_var
-			RSqNormal (j) = 100*new_qof (0)
-			RSqAdj (j) = 100*new_qof(7)
-			val x_cv = x.selectCols(fs_cols.toArray)	// Obtaining X-matrix for selected features
-			println(x_cv.dim1, x_cv.dim2)
-			val cv = new cross_validation(x_cv, y)
-			RSqCV(j) = 100*cv.response_surface_cv()	
+			if (add_var != -1) {
+				fs_cols += add_var
+				RSqNormal (j) = 100*new_qof (0)
+				RSqAdj (j) = 100*new_qof(7)
+				val x_cv = x.selectCols(fs_cols.toArray)	// Obtaining X-matrix for selected features
+				println(x_cv.dim1, x_cv.dim2)
+				val cv = new cross_validation(x_cv, y)
+				RSqCV(j) = 100*cv.response_surface_cv()
+			}	
 		}
 		// Saving R-Squared, RBar-Squared, RCV-Squared vectors into a matrix, to plot them concurrently
 		val plot_mat = new MatrixD(3, num_terms)
